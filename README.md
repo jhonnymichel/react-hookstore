@@ -4,7 +4,7 @@ Which basically means no magic behind the curtains, only pure react APIs being u
 
 ## Installation
 You can install the lib through NPM or grab the files in the `dist` folder of this repository.
-`npm install --save react-hookstore'
+`npm install --save react-hookstore`
 
 ## Usage
 ### Basic
