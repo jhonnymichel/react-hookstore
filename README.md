@@ -1,5 +1,5 @@
 # React Hook Store
-A very simple and small (2k gzipped!) state management lib for React that uses the bleeding edge React's `useState` hook.
+A very simple and small (1k gzipped!) state management lib for React that uses the bleeding edge React's `useState` hook.
 Which basically means no magic behind the curtains, only pure react APIs being used to share state across components.
 
 ## Installation
