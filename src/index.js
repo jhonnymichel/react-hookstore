@@ -46,6 +46,10 @@ export function useStore(name='store') {
   }
   const [ state, set ] = useState(store.state);
 
+  useEffect(() => () => {
+    store.setters = store.setters.filter(setter => setter !== set)
+  }, [])
+
   if (!store.setters.includes(set)) {
     store.setters.push(set);
   }
