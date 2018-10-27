@@ -1,14 +1,5 @@
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("react"));
-	else if(typeof define === 'function' && define.amd)
-		define(["react"], factory);
-	else if(typeof exports === 'object')
-		exports["hookStore"] = factory(require("react"));
-	else
-		root["hookStore"] = factory(root["react"]);
-})(window, function(__WEBPACK_EXTERNAL_MODULE__0__) {
-return /******/ (function(modules) { // webpackBootstrap
+exports["hookStore"] =
+/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -98,7 +89,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__0__;
+module.exports = require("react");
 
 /***/ }),
 /* 1 */
@@ -167,6 +158,9 @@ function useStore(name = 'store') {
   }
 
   const [state, set] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(store.state);
+  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => () => {
+    store.setters = store.setters.filter(setter => setter !== set);
+  }, []);
 
   if (!store.setters.includes(set)) {
     store.setters.push(set);
@@ -177,5 +171,4 @@ function useStore(name = 'store') {
 
 /***/ })
 /******/ ]);
-});
 //# sourceMappingURL=react-hookstore.js.map
