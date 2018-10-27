@@ -11,7 +11,7 @@ You can install the lib through NPM or grab the files in the `dist` folder of th
 
 This is the most basic implementation of the library. create a store with its initial state.
 Later, call `useStore` inside components to retrive its state and setState method.
-The value passed as the first argument to the setState method will be the new state. no reducer required (but you can use it, see the advanced example down below).
+The value passed as the first argument to the setState method will be the new state. no reducer required (but you can use a reducer, see the advanced example down below).
 
 ```javascript
 import React from 'react';
