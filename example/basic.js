@@ -22,7 +22,7 @@ export function StatefulHello() {
 }
 
 export function AnotherComponent() {
-  // you can name the state whateve you want
+  // you can name the state whatever you want
   const [ value ] = useStore();
   return (
     <div style={{ ...defaultStyles, backgroundColor: 'lightgray', color: 'black' }}>

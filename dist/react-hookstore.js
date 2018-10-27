@@ -112,6 +112,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 
 let stores = {};
+
+const defaultReducer = (state, payload) => payload;
 /**
  * Creates a new store
  * @param {Object} config - An object containing the store setup
@@ -122,13 +124,14 @@ let stores = {};
 
 /**
  *
- * @param {config.reducer} prevState, update - The reducer handler. Optional.
+ * @param {config.reducer} prevState, action - The reducer handler. Optional.
  */
+
 
 function createStore({
   state = {},
   name = 'store',
-  reducer
+  reducer = defaultReducer
 }) {
   if (stores[name]) {
     throw 'store already exists';
@@ -138,13 +141,8 @@ function createStore({
     state,
     reducer,
 
-    setState(value) {
-      if (typeof this.reducer === 'function') {
-        this.state = this.reducer(this.state, value);
-      } else {
-        this.state = value;
-      }
-
+    setState(action) {
+      this.state = this.reducer(this.state, action);
       this.setters.forEach(setter => setter(this.state));
     },
 
