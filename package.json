@@ -2,7 +2,7 @@
   "name": "react-hookstore",
   "version": "1.0.5",
   "description": "A state management library for react using the bleeding edge hooks feature",
-  "main": "src/index.js",
+  "main": "dist/react-hookstore.js",
   "module": "src/index.js",
   "jsnext:main": "src/index.js",
   "scripts": {
@@ -22,9 +22,13 @@
   "devDependencies": {
     "@babel/core": "^7.1.2",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/preset-env": "^7.1.0",
     "@babel/preset-react": "^7.0.0",
+    "@babel/preset-stage-0": "^7.0.0",
     "babel-loader": "^8.0.4",
     "html-webpack-plugin": "^3.2.0",
+    "react": "^16.7.0-alpha.0",
+    "react-dom": "^16.7.0-alpha.0",
     "webpack": "^4.23.1",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.10",
@@ -36,9 +40,5 @@
   },
   "files": [
     "dist"
-  ],
-  "dependencies": {
-    "react": "^16.7.0-alpha.0",
-    "react-dom": "^16.7.0-alpha.0"
-  }
+  ]
 }
