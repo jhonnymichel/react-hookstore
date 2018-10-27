@@ -117,15 +117,15 @@ function TodoList() {
 }
 ```
 ## API
-### `createStore({ state?={}, name?='store', reducer?=null })`
+### `createStore(config={ state, name, reducer })`
 Creates a store to be used across the entire application.
 ### Arguments
-#### `state:* = {}`
-It can be of any data type.
-#### `name:String = 'store'`
+#### `config.state:* = {}`
+The store's initial state. it can be any data type. defaults to an empty object. Optional
+#### `config.name:String = 'store'`
 The namespace for your store, it can be used to better identify the store across the application. Optional
-#### `reducer:Function = null`
-You can specify a reducer function to take care of state changes. the reducer functions receives two arguments, the previous state and the payload that triggered the state update. the function must returns a new state, if not, the new state will be `null`
+#### `config.reducer:Function = null`
+You can specify a reducer function to take care of state changes. the reducer functions receives two arguments, the previous state and the action that triggered the state update. the function must return a new state, if not, the new state will be `null`. Optional
 
-### `useStore(storeName?='store')`
+### `useStore(storeName='store')`
 A function that returns a pair with the current state and the handler method for the specified store.
