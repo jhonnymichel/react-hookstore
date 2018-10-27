@@ -6,7 +6,7 @@ module.exports = {
     filename: 'react-hookstore.js',
     path: path.resolve(__dirname, 'dist'),
     library: 'hookStore',
-    libraryTarget: 'commonjs'
+    libraryTarget: 'umd'
   },
   devtool: 'source-map',
   mode: 'development',
