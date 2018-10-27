@@ -50,7 +50,7 @@ const minConfig = {
 const demoConfig = {
   optimization: minConfig.optimization,
   output: {
-    path: path.resolve(__dirname, 'demo'),
+    path: path.resolve(__dirname, 'docs'),
     filename: 'demo.js'
   },
   externals: [],
