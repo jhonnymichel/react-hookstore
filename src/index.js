@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 let stores = {};
+
+const defaultReducer = (state, payload) => payload;
 
 /**
  * Creates a new store
@@ -12,9 +14,9 @@ let stores = {};
 
  /**
   *
-  * @param {config.reducer} prevState, update - The reducer handler. Optional.
+  * @param {config.reducer} prevState, action - The reducer handler. Optional.
   */
-export function createStore({ state = {}, name='store', reducer }) {
+export function createStore({ state = {}, name='store', reducer=defaultReducer }) {
   if (stores[name]) {
     throw 'store already exists'
   }
@@ -22,12 +24,8 @@ export function createStore({ state = {}, name='store', reducer }) {
   const store = {
     state,
     reducer,
-    setState(value) {
-      if (typeof this.reducer === 'function') {
-        this.state = this.reducer(this.state, value);
-      } else {
-        this.state = value;
-      }
+    setState(action) {
+      this.state = this.reducer(this.state, action);
       this.setters.forEach(setter => setter(this.state));
     },
     setters: []

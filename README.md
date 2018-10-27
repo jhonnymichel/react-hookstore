@@ -9,12 +9,15 @@ You can install the lib through NPM or grab the files in the `dist` folder of th
 ## Usage
 ### Basic
 
-This is the most basic implementation of the library. create a store with its initial state and handle state updates inside the components.
+This is the most basic implementation of the library. create a store with its initial state.
+Later, call useStore inside components to retrive its state and setState method.
+The value passed as the first argument to the setState method will be the new state. no reducer required (but you can use it, see the advanced example down below).
+
 ```javascript
 import React from 'react';
 import { createStore, useStore } from 'react-hookstore';
 
-createStore(1);
+createStore({ state: 1 });
 
 function StatefullHello() {
   // just use the useStore method to grab the state and the setState methods
@@ -31,11 +34,11 @@ function StatefullHello() {
 
 function AnotherComponent() {
   // you can name the state whatever you want
-  const [ value ] = useStore();
+  const [ timesClicked ] = useStore();
   return (
     <div>
       <h1>Hello, this is a second component, with no relation to the one on the top</h1>
-      <h2>But it is still aware of how many times the button was clicked: {value} </h2>
+      <h2>But it is still aware of how many times the button was clicked: {timesClicked} </h2>
     </div>
   )
 }
@@ -50,22 +53,42 @@ import { createStore, useStore } from 'react-hookstore';
 // this one is more complex, it has a name and a reducer function
 createStore({
   name: 'todoList',
-  state: ['buy milk'],
-  reducer(prevState, value) {
-    return [ ...prevState, value ];
+  state: {
+    idCount: 0,
+    todos: [{ id: 0, text: 'buy milk' }],
+  },
+  reducer(state, action) {
+    // when a reducer is being used, you must return a new state object
+    switch action.type:
+      case 'add':
+        const id = ++state.idCount;
+        return {
+          ...state,
+          todos: [
+            ...todos,
+            { id, text: action.payload }
+          ];
+        }
+      case 'remove':
+        return {
+          ...state,
+          todos: state.todos.filter(todo => todo.id !== action.payload)
+        }
+      default:
+        return todos;
   }
 });
 
 function AddTodo() {
   // Grab the correct store by specifying its namespace
-  const [ todos, createTodo ] = useStore('todoList');
+  const [ state: { todos }, dispatch ] = useStore('todoList');
 
   const onSubmit = (e) => {
     e.preventDefault();
     const input = e.target.querySelector('input');
     const todo = input.value;
     input.value = '';
-    createTodo(todo);
+    dispatch({ type: 'add', payload: todo });
   }
 
   return (
@@ -78,12 +101,16 @@ function AddTodo() {
 
 function TodoList() {
   // Grab the correct store by specifying its namespace
-  const [ todos ] = useStore('todoList');
-
+  const [ state: { todos }, dispatch ] = useStore('todoList');
+  const deleteTodo = id => dispatch({ type: 'delete', payload: id })
   return (
     <ul>
       <h2>TODOLIST</h2>
-      { todos.map(todo => <li>{ todo }</li>) }
+      { todos.map(todo =>
+        <li key={todo.id}>
+          { todo } <button onClick={() => deleteTodo(id)} type="button">X</button>
+        </li>)
+      }
     </ul>
   )
 }
