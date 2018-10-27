@@ -59,7 +59,7 @@ createStore({
   },
   reducer(state, action) {
     // when a reducer is being used, you must return a new state object
-    switch action.type:
+    switch action.type {
       case 'add':
         const id = ++state.idCount;
         return {
@@ -76,6 +76,7 @@ createStore({
         }
       default:
         return todos;
+    }
   }
 });
 
