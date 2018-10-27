@@ -2,6 +2,8 @@
 A very simple and small (1k gzipped!) state management lib for React that uses the bleeding edge React's `useState` hook.
 Which basically means no magic behind the curtains, only pure react APIs being used to share state across components.
 
+> ⚠️ Warning: hooks are not part of a stable React release yet, so use this library only for experiments
+
 ## Installation
 You can install the lib through NPM or grab the files in the `dist` folder of this repository.
 `npm install --save react-hookstore`
