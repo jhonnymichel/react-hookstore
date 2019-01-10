@@ -169,9 +169,10 @@ function getStoreByIdentifier(identifier) {
 }
 /**
  * Creates a new store
- * @param {String} name - The store namespace. not required if you're not using multiple stores within the same app.
+ * @param {String} name - The store namespace.
  * @param {*} state [{}] - The store initial state. It can be of any type.
  * @callback reducer [null]
+ * @returns {StoreInterface} The store instance.
  */
 
 /**
@@ -213,6 +214,7 @@ function createStore(name) {
 /**
  * Returns a store instance based on its name
  * @param {String} name - The name of the wanted store
+ * @returns {StoreInterface} the store instance
  */
 
 function getStoreByName(name) {
@@ -224,11 +226,11 @@ function getStoreByName(name) {
 }
 /**
  * Returns a [ state, setState ] pair for the selected store. Can only be called within React Components
- * @param {String|StoreInterface} identifier ['store'] - The identifier for the wanted store
+ * @param {String|StoreInterface} identifier - The identifier for the wanted store
+ * @returns {Array} the [state, setState] pair.
  */
 
-function useStore() {
-  var identifier = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'store';
+function useStore(identifier) {
   var store = getStoreByIdentifier(identifier);
 
   if (!store) {
