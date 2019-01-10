@@ -65,15 +65,14 @@ function AnotherComponent() {
 
 ### <a name="usage_namespace">Namespacing and referencing stores</a>
 It is possible to create multiple stores in an app.
-A string name must be provided at a store creation when multiple stores are created.
 Stores can be referenced by using their instance that is returned by the createStore method, as well as using their name.
 
 ```javascript
 import React from 'react';
 import { createStore, useStore } from 'react-hookstore';
 
-const clickCount = createStore({ state: 1, name: 'clickCountStore'});
-createStore({ state: 'John Doe', name: 'nameStore' });
+const clickCount = createStore('clickCountStore', 0);
+createStore('nameStore', 'John Doe');
 
 // counter will start at 2
 clickCount.setState(2);
