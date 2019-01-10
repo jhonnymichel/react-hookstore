@@ -11,6 +11,14 @@ class StoreInterface {
       this.dispatch = store.setState : this.setState = store.setState;
     this.getState = () => store.state;
   }
+
+  setState() {
+    console.warn(`[React Hookstore] Store ${this.name} uses a reducer to handle its state updates. use dispatch instead of setState`)
+  }
+
+  dispatch() {
+    console.warn(`[React Hookstore] Store ${this.name} does not use a reducer to handle state updates. use setState instead of dispatch`)
+  }
 }
 
 function getStoreByIdentifier(identifier) {

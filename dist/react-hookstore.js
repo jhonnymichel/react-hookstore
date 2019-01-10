@@ -123,6 +123,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 var stores = {};
 
@@ -130,16 +134,34 @@ var defaultReducer = function defaultReducer(state, payload) {
   return payload;
 };
 
-var StoreInterface = function StoreInterface(name, store, useReducer) {
-  _classCallCheck(this, StoreInterface);
+var StoreInterface =
+/*#__PURE__*/
+function () {
+  function StoreInterface(name, store, useReducer) {
+    _classCallCheck(this, StoreInterface);
 
-  this.name = name;
-  useReducer ? this.dispatch = store.setState : this.setState = store.setState;
+    this.name = name;
+    useReducer ? this.dispatch = store.setState : this.setState = store.setState;
 
-  this.getState = function () {
-    return store.state;
-  };
-};
+    this.getState = function () {
+      return store.state;
+    };
+  }
+
+  _createClass(StoreInterface, [{
+    key: "setState",
+    value: function setState() {
+      console.warn("[React Hookstore] Store ".concat(this.name, " uses a reducer to handle its state updates. use dispatch instead of setState"));
+    }
+  }, {
+    key: "dispatch",
+    value: function dispatch() {
+      console.warn("[React Hookstore] Store ".concat(this.name, " does not use a reducer to handle state updates. use setState instead of dispatch"));
+    }
+  }]);
+
+  return StoreInterface;
+}();
 
 function getStoreByIdentifier(identifier) {
   var name = identifier instanceof StoreInterface ? identifier.name : identifier;

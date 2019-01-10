@@ -10,6 +10,14 @@
     "build": "webpack --progress --config webpack.prod.config.js",
     "start": "webpack-dev-server --hot --reload --config webpack.dev.config.js"
   },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/jhonnymichel/react-hookstore"
+  },
+  "bugs": {
+    "url" : "https://github.com/jhonnymichel/react-hookstore/issues",
+    "email" : "jhonnymichel@outlook.com"
+  },
   "jest": {
     "setupTestFrameworkScriptFile": "<rootDir>/tests-setup.js"
   },
