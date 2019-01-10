@@ -3,7 +3,7 @@ import { shallow, mount } from 'enzyme';
 import { createStore, useStore } from '..';
 
 describe('useStore', () => {
-  const store = createStore({state: 0, name: '1'});
+  const store = createStore('store', 0);
 
   beforeEach(() => {
     store.setState(0);
@@ -23,7 +23,7 @@ describe('useStore', () => {
 
   it('Should provide the component with a functional state and setState pair', () => {
     const Component = (props) => {
-      const [state, setState] = useStore('1');
+      const [state, setState] = useStore('store');
 
       return (
         <button onClick={() => setState(state+1)}>
@@ -61,7 +61,7 @@ describe('useStore', () => {
 
   it('Should update all components if setState is called from anywhere', () => {
     const Component = (props) => {
-      const [state, setState] = useStore('1');
+      const [state, setState] = useStore('store');
 
       return (
         <button onClick={() => setState(state+1)}>
@@ -71,7 +71,7 @@ describe('useStore', () => {
     }
 
     const AnotherComponent = (props) => {
-      const [state] = useStore('1');
+      const [state] = useStore('store');
 
       return (
         <div>
@@ -94,8 +94,8 @@ describe('useStore', () => {
   });
 
   test('Different stores work in hamorny', () => {
-    const countStore = createStore({name: 'countStore', state: 0});
-    const nameStore = createStore({name: 'nameStore', state: ''});
+    const countStore = createStore('countStore', 0);
+    const nameStore = createStore('nameStore', '');
 
     const HelloWorld = (props) => {
       const [name] = useStore(nameStore);

@@ -5,9 +5,10 @@ let stores = {};
 const defaultReducer = (state, payload) => payload;
 
 class StoreInterface {
-  constructor(name, store) {
+  constructor(name, store, useReducer) {
     this.name = name;
-    this.setState = store.setState;
+    useReducer ?
+      this.dispatch = store.setState : this.setState = store.setState;
     this.getState = () => store.state;
   }
 }
@@ -19,17 +20,19 @@ function getStoreByIdentifier(identifier) {
 
 /**
  * Creates a new store
- * @param {Object} config - An object containing the store setup
- * @param {*} config.state [{}] - The store initial state. It can be of any type.
- * @param {String} config.name ['store'] - The store namespace. not required if you're not using multiple stores within the same app.
- * @callback confg.reducer [null]
+ * @param {String} name - The store namespace. not required if you're not using multiple stores within the same app.
+ * @param {*} state [{}] - The store initial state. It can be of any type.
+ * @callback reducer [null]
  */
 
  /**
   *
-  * @param {config.reducer} prevState, action - The reducer handler. Optional.
+  * @param {reducer} prevState, action - The reducer handler. Optional.
   */
-export function createStore({ state = {}, name='store', reducer=defaultReducer }) {
+export function createStore(name, state = {}, reducer=defaultReducer) {
+  if (typeof name !== 'string') {
+    throw 'store name must be a string';
+  }
   if (stores[name]) {
     throw 'store already exists'
   }
@@ -44,7 +47,7 @@ export function createStore({ state = {}, name='store', reducer=defaultReducer }
     setters: []
   };
   store.setState = store.setState.bind(store);
-  store.public = new StoreInterface(name, store);
+  store.public = new StoreInterface(name, store, reducer !== defaultReducer);
 
   stores = Object.assign({}, stores, { [name]: store });
   return store.public;
