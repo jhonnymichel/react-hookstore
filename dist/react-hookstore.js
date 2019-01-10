@@ -107,6 +107,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__0__;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createStore", function() { return createStore; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getStoreByName", function() { return getStoreByName; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "useStore", function() { return useStore; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
@@ -120,12 +121,30 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 
 var stores = {};
 
 var defaultReducer = function defaultReducer(state, payload) {
   return payload;
 };
+
+var StoreInterface = function StoreInterface(name, store) {
+  _classCallCheck(this, StoreInterface);
+
+  this.name = name;
+  this.setState = store.setState;
+
+  this.getState = function () {
+    return store.state;
+  };
+};
+
+function getStoreByIdentifier(identifier) {
+  var name = identifier instanceof StoreInterface ? identifier.name : identifier;
+  return stores[name];
+}
 /**
  * Creates a new store
  * @param {Object} config - An object containing the store setup
@@ -166,17 +185,32 @@ function createStore(_ref) {
     setters: []
   };
   store.setState = store.setState.bind(store);
+  store.public = new StoreInterface(name, store);
   stores = Object.assign({}, stores, _defineProperty({}, name, store));
-  return store;
+  return store.public;
+}
+/**
+ * Returns a store instance based on its name
+ * @param {String} name ['store'] - The name of the wanted store
+ */
+
+function getStoreByName() {
+  var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'store';
+
+  try {
+    return stores[name].public;
+  } catch (e) {
+    throw 'store does not exist';
+  }
 }
 /**
  * Returns a [ state, setState ] pair for the selected store. Can only be called within React Components
- * @param {String} name ['store'] - The namespace for the wanted store
+ * @param {String|StoreInterface} identifier ['store'] - The identifier for the wanted store
  */
 
 function useStore() {
-  var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'store';
-  var store = stores[name];
+  var identifier = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'store';
+  var store = getStoreByIdentifier(identifier);
 
   if (!store) {
     throw 'store does not exist';
