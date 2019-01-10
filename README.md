@@ -60,6 +60,9 @@ import { createStore, useStore } from 'react-hookstore';
 const clickCount = createStore({ state: 1, name: 'clickCountStore'});
 createStore({ state: 'John Doe', name: 'nameStore' });
 
+// counter will start at 2
+clickCount.setState(2);
+
 function StatefullHello() {
 
   // this line will reference a store by its instance
