@@ -86,7 +86,7 @@ createStore({
 
 function AddTodo() {
   // Grab the correct store by specifying its namespace
-  const [ state: { todos }, dispatch ] = useStore('todoList');
+  const [ { todos }, dispatch ] = useStore('todoList');
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -106,7 +106,7 @@ function AddTodo() {
 
 function TodoList() {
   // Grab the correct store by specifying its namespace
-  const [ state: { todos }, dispatch ] = useStore('todoList');
+  const [ { todos }, dispatch ] = useStore('todoList');
   const deleteTodo = id => dispatch({ type: 'delete', payload: id })
   return (
     <ul>
