@@ -102,13 +102,13 @@ import React from 'react';
 import { createStore, useStore } from 'react-hookstore';
 
 // this one is more complex, it has a name and a reducer function
-const todoListStore = createStore({
-  name: 'todoList',
-  state: {
+const todoListStore = createStore(
+  'todoList',
+  {
     idCount: 0,
     todos: [{ id: 0, text: 'buy milk' }],
   },
-  reducer(state, action) {
+  (state, action) => {
     // when a reducer is being used, you must return a new state object
     switch action.type {
       case 'add':
@@ -129,7 +129,7 @@ const todoListStore = createStore({
         return todos;
     }
   }
-});
+};
 
 function AddTodo() {
   const [ { todos }, dispatch ] = useStore(todoListStore);
