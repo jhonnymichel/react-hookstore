@@ -130,11 +130,11 @@ var defaultReducer = function defaultReducer(state, payload) {
   return payload;
 };
 
-var StoreInterface = function StoreInterface(name, store) {
+var StoreInterface = function StoreInterface(name, store, useReducer) {
   _classCallCheck(this, StoreInterface);
 
   this.name = name;
-  this.setState = store.setState;
+  useReducer ? this.dispatch = store.setState : this.setState = store.setState;
 
   this.getState = function () {
     return store.state;
@@ -147,25 +147,24 @@ function getStoreByIdentifier(identifier) {
 }
 /**
  * Creates a new store
- * @param {Object} config - An object containing the store setup
- * @param {*} config.state [{}] - The store initial state. It can be of any type.
- * @param {String} config.name ['store'] - The store namespace. not required if you're not using multiple stores within the same app.
- * @callback confg.reducer [null]
+ * @param {String} name - The store namespace. not required if you're not using multiple stores within the same app.
+ * @param {*} state [{}] - The store initial state. It can be of any type.
+ * @callback reducer [null]
  */
 
 /**
  *
- * @param {config.reducer} prevState, action - The reducer handler. Optional.
+ * @param {reducer} prevState, action - The reducer handler. Optional.
  */
 
 
-function createStore(_ref) {
-  var _ref$state = _ref.state,
-      state = _ref$state === void 0 ? {} : _ref$state,
-      _ref$name = _ref.name,
-      name = _ref$name === void 0 ? 'store' : _ref$name,
-      _ref$reducer = _ref.reducer,
-      reducer = _ref$reducer === void 0 ? defaultReducer : _ref$reducer;
+function createStore(name) {
+  var state = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var reducer = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : defaultReducer;
+
+  if (typeof name !== 'string') {
+    throw 'store name must be a string';
+  }
 
   if (stores[name]) {
     throw 'store already exists';
@@ -185,18 +184,16 @@ function createStore(_ref) {
     setters: []
   };
   store.setState = store.setState.bind(store);
-  store.public = new StoreInterface(name, store);
+  store.public = new StoreInterface(name, store, reducer !== defaultReducer);
   stores = Object.assign({}, stores, _defineProperty({}, name, store));
   return store.public;
 }
 /**
  * Returns a store instance based on its name
- * @param {String} name ['store'] - The name of the wanted store
+ * @param {String} name - The name of the wanted store
  */
 
-function getStoreByName() {
-  var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'store';
-
+function getStoreByName(name) {
   try {
     return stores[name].public;
   } catch (e) {

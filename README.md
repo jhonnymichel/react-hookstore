@@ -167,14 +167,14 @@ function TodoList() {
 }
 ```
 ## Methods API
-### <a name="api_createStore">`createStore(config={ state, name, reducer }):StoreInterface`</a>
+### <a name="api_createStore">`createStore(name:String, state:*, reducer:Function):StoreInterface`</a>
 Creates a store to be used across the entire application. Returns a StoreInterface object.
 ### Arguments
-#### `config.state:* = {}`
+#### `name:String`
+The namespace for your store, it can be used to identify the store across the application.
+#### `state:* = {}`
 The store's initial state. it can be any data type. defaults to an empty object. Optional
-#### `config.name:String = 'store'`
-The namespace for your store, it can be used to better identify the store across the application. Optional
-#### `config.reducer:Function = null`
+#### `reducer:Function = null`
 You can specify a reducer function to take care of state changes. the reducer functions receives two arguments, the previous state and the action that triggered the state update. the function must return a new state, if not, the new state will be `null`. Optional
 
 ### <a name="api_getStoreByName">`getStoreByName(name:String):StoreInterface`</a>
@@ -197,10 +197,10 @@ Sets the state of the store. works if the store does not use a reducer state han
 Dispatchs whatever is passed into this function to the store. works if the store uses a reducer state handler. Otherwise, use `setState`
 
 ## React API
-### <a name="api_useStore">`useStore(identifier='store')`</a>
+### <a name="api_useStore">`useStore(identifier:String|StoreInterface)`</a>
 A function that returns a pair with the current state and the handler method for the specified store.
 ### Arguments
-#### Identifier:String|StoreInterface = 'store';
+#### Identifier:String|StoreInterface
 The store identifier. It can be either its string name or its StoreInterface instance returned by a createStore or getStoreByName method.
 
 # <a name="migration">Migrating from v1.0 to v1.1</a>

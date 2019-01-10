@@ -6,11 +6,11 @@ const defaultStyles = {
 }
 
 // Creating a nameless store, do that if you do not wish to have multiple stores in your app
-createStore({ state: 1 });
+createStore('clickCounter', 0);
 
 export function StatefulHello() {
   // just use the useStore method to grab the state and the setState methods
-  const [ state, setState ] = useStore();
+  const [ state, setState ] = useStore('clickCounter');
 
   return (
     <div style={{ ...defaultStyles }}>
@@ -23,7 +23,7 @@ export function StatefulHello() {
 
 export function AnotherComponent() {
   // you can name the state whatever you want
-  const [ value ] = useStore();
+  const [ value ] = useStore('clickCounter');
   return (
     <div style={{ ...defaultStyles, backgroundColor: 'lightgray', color: 'black' }}>
       <h1>Hello, this is a second component, with no relation to the one on the top</h1>

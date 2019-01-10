@@ -55,9 +55,9 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
 
 /**
  * Returns a store instance based on its name
- * @param {String} name ['store'] - The name of the wanted store
+ * @param {String} name - The name of the wanted store
  */
-export function getStoreByName(name='store') {
+export function getStoreByName(name) {
   try {
     return stores[name].public;
   } catch(e) {

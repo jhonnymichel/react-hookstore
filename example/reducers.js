@@ -2,13 +2,13 @@ import React from 'react';
 import { createStore, useStore } from '../src';
 
 // this one is more complex, it has a name and a reducer function
-createStore({
-  name: 'todoList',
-  state: {
+createStore(
+  'todoList',
+  {
     idCount: 0,
     todos: [{ id: 0, text: 'buy milk' }],
   },
-  reducer(state, action) {
+  (state, action) => {
     // when a reducer is being used, you must return a new state object
     switch (action.type) {
       case 'create':
@@ -29,10 +29,9 @@ createStore({
         return state;
     }
   }
-});
+);
 
 export function AddTodo() {
-  // Grab the correct store by specifying its namespace
   const [ state, dispatch ] = useStore('todoList');
 
   const onSubmit = (e) => {
