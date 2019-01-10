@@ -4,6 +4,19 @@ let stores = {};
 
 const defaultReducer = (state, payload) => payload;
 
+class StoreInterface {
+  constructor(name, store) {
+    this.name = name;
+    this.setState = store.setState;
+    this.getState = () => store.state;
+  }
+}
+
+function getStoreByIdentifier(identifier) {
+  const name = identifier instanceof StoreInterface ? identifier.name : identifier;
+  return stores[name];
+}
+
 /**
  * Creates a new store
  * @param {Object} config - An object containing the store setup
@@ -31,16 +44,30 @@ export function createStore({ state = {}, name='store', reducer=defaultReducer }
     setters: []
   };
   store.setState = store.setState.bind(store);
+  store.public = new StoreInterface(name, store);
+
   stores = Object.assign({}, stores, { [name]: store });
-  return store;
+  return store.public;
+}
+
+/**
+ * Returns a store instance based on its name
+ * @param {String} name ['store'] - The name of the wanted store
+ */
+export function getStoreByName(name='store') {
+  try {
+    return stores[name].public;
+  } catch(e) {
+    throw 'store does not exist';
+  }
 }
 
 /**
  * Returns a [ state, setState ] pair for the selected store. Can only be called within React Components
- * @param {String} name ['store'] - The namespace for the wanted store
+ * @param {String|StoreInterface} identifier ['store'] - The identifier for the wanted store
  */
-export function useStore(name='store') {
-  const store = stores[name];
+export function useStore(identifier='store') {
+  const store = getStoreByIdentifier(identifier);
   if (!store) {
     throw 'store does not exist';
   }

@@ -1,4 +1,4 @@
-import { createStore, getStore } from '..';
+import { createStore, getStoreByName } from '..';
 
 describe('createStore', () => {
   it('Should create an store and return its public interface', () => {
@@ -20,18 +20,18 @@ describe('createStore', () => {
   });
 });
 
-describe('getStore', () => {
+describe('getStoreByName', () => {
   it('Should return an store if it exists', () => {
     createStore({name: 'test'});
 
-    const store = getStore('test');
+    const store = getStoreByName('test');
     expect(Object.keys(store)).toEqual(['name', 'setState', 'getState']);
     expect(store.name).toBe('test');
   })
 
   it('Should throw an error if store does not exist', () => {
     expect(() => {
-      getStore('Unexistent store');
+      getStoreByName('Unexistent store');
     }).toThrow();
   });
 });

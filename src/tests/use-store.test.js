@@ -5,6 +5,10 @@ import { createStore, useStore } from '..';
 describe('useStore', () => {
   const store = createStore({state: 0, name: '1'});
 
+  beforeEach(() => {
+    store.setState(0);
+  });
+
   it('Should throw an error if an inexistent store is referenced', () => {
     const Component = (props) => {
       useStore('Unreal Store');
@@ -20,6 +24,25 @@ describe('useStore', () => {
   it('Should provide the component with a functional state and setState pair', () => {
     const Component = (props) => {
       const [state, setState] = useStore('1');
+
+      return (
+        <button onClick={() => setState(state+1)}>
+          This button has been clicked {state} times
+        </button>
+      );
+    }
+
+    const rendered = mount(<Component />);
+    expect(rendered.text()).toBe('This button has been clicked 0 times');
+    rendered.find('button').simulate('click');
+    expect(rendered.text()).toBe('This button has been clicked 1 times');
+    rendered.find('button').simulate('click');
+    expect(rendered.text()).toBe('This button has been clicked 2 times');
+  });
+
+  it('Should provide the component with correct store based on class identifier', () => {
+    const Component = (props) => {
+      const [state, setState] = useStore(store);
 
       return (
         <button onClick={() => setState(state+1)}>
@@ -57,8 +80,6 @@ describe('useStore', () => {
       );
     }
 
-    store.setState(0);
-
     const renderedComponent = mount(<Component />);
     const renderedAnotherComponent = mount(<AnotherComponent />);
 
@@ -77,8 +98,8 @@ describe('useStore', () => {
     const nameStore = createStore({name: 'nameStore', state: ''});
 
     const HelloWorld = (props) => {
-      const [name] = useStore('nameStore');
-      const [count] = useStore('countStore');
+      const [name] = useStore(nameStore);
+      const [count] = useStore(countStore);
 
       return (
         <div>Hello, {name}! you have been here {count} times!</div>
