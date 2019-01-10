@@ -1,4 +1,6 @@
 # React Hook Store
+[![Build Status](https://travis-ci.org/jhonnymichel/react-hookstore.svg?branch=master)](https://travis-ci.org/jhonnymichel/react-hookstore)
+
 A very simple and small (1k gzipped!) state management lib for React that uses the bleeding edge React's `useState` hook.
 Which basically means no magic behind the curtains, only pure react APIs being used to share state across components.
 
