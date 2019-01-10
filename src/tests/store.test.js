@@ -20,6 +20,12 @@ describe('createStore', () => {
       createStore('unique');
     }).toThrow();
   });
+
+  it('Should not allow store names to not be a string', () => {
+    expect(() => {
+      createStore(42, 0);
+    }).toThrow();
+  });
 });
 
 describe('getStoreByName', () => {
@@ -48,7 +54,27 @@ describe('store', () => {
     expect(store.getState()).toEqual({});
   });
 
-  test('store.setState must use the provided reducer to handle state update', () => {
+  test('store.setState should not take effect when called for a reducered store', () => {
+    const consoleWarn = jest.spyOn(global.console, 'warn');
+    const reducer = jest.fn();
+    const store = createStore('reduceredStore', 0, reducer);
+    store.setState(1);
+    expect(consoleWarn).toHaveBeenCalled();
+    expect(reducer).not.toHaveBeenCalled();
+    expect(store.getState()).toBe(0);
+  });
+
+  test('store.dispatch should not take effect when called for a non-reducered store', () => {
+    const consoleWarn = jest.spyOn(global.console, 'warn');
+    const store = createStore('normalStore', 0);
+    const setState = jest.spyOn(store, 'setState');
+    store.dispatch(1);
+    expect(consoleWarn).toHaveBeenCalled();
+    expect(setState).not.toHaveBeenCalled();
+    expect(store.getState()).toBe(0);
+  });
+
+  test('store.dispatch must use the provided reducer to handle state update', () => {
     const reducer = jest.fn();
     const store = createStore('store4', 0, reducer);
     store.dispatch();
