@@ -181,7 +181,7 @@ You can specify a reducer function to take care of state changes. the reducer fu
 ### <a name="api_getStoreByName">`getStoreByName(name:String):StoreInterface`</a>
 Finds a store by its name and return its instance.
 ### Arguments
-#### `name:String = 'store'`
+#### `name:String
 The name of the store.
 
 ## Objects API
