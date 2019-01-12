@@ -25,6 +25,7 @@ Try it on [Codesandbox!](https://codesandbox.io/s/r58pqonkop)
 
 ## <a name="installation">Installation</a>
 You can install the lib through NPM or grab the files in the `dist` folder of this repository.
+
 `npm install --save react-hookstore`
 
 ## <a name="usage">Usage</a>
@@ -103,7 +104,6 @@ We can delegate the state management to reducers (just like redux!) if we want.
 import React from 'react';
 import { createStore, useStore } from 'react-hookstore';
 
-// this one is more complex, it has a name and a reducer function
 const todoListStore = createStore(
   'todoList',
   {
@@ -175,7 +175,7 @@ Creates a store to be used across the entire application. Returns a StoreInterfa
 The namespace for your store, it can be used to identify the store across the application.
 #### `state:* = {}`
 The store's initial state. it can be any data type. defaults to an empty object. Optional
-#### `reducer:Function = null`
+#### `reducer:Function`
 You can specify a reducer function to take care of state changes. the reducer functions receives two arguments, the previous state and the action that triggered the state update. the function must return a new state, if not, the new state will be `null`. Optional
 
 ### <a name="api_getStoreByName">`getStoreByName(name:String):StoreInterface`</a>
@@ -192,14 +192,14 @@ The store instance that is returned by the createStore and getStoreByName method
 The name of the store;
 #### `getState:Function():*`
 A method that returns the store's current state
-#### `setState:Function(*)`
+#### `setState:Function(state:*)`
 Sets the state of the store. works if the store does not use a reducer state handler. Otherwise, use `dispatch`
-#### `dispatch:Function(*)`
+#### `dispatch:Function(action:*)`
 Dispatchs whatever is passed into this function to the store. works if the store uses a reducer state handler. Otherwise, use `setState`
 
 ## React API
-### <a name="api_useStore">`useStore(identifier:String|StoreInterface)`</a>
-A function that returns a pair with the current state and the handler method for the specified store.
+### <a name="api_useStore">`useStore(identifier:String|StoreInterface):Array[state, setState|dispatch]`</a>
+A function that returns a pair with the current state and a function to trigger state updates for the specified store.
 ### Arguments
 #### Identifier:String|StoreInterface
 The store identifier. It can be either its string name or its StoreInterface instance returned by a createStore or getStoreByName method.
@@ -208,7 +208,7 @@ The store identifier. It can be either its string name or its StoreInterface ins
 - createStore now receives 3 arguments instead of an object with 3 properties.
 - the name argument is now required even if only one store is being used.
 ```javascript
-// v0.1
+// v1.0
 createStore({state: 0});
 createStore({
   name: 'store',
@@ -217,7 +217,7 @@ createStore({
     return state + action;
   }
 })
-// v0.2
+// v1.1
 createStore('myStore', 0);
 createStore('store', 0, (state, value) => state + action);
 ```
