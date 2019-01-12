@@ -16,7 +16,7 @@ Try it on [Codesandbox!](https://codesandbox.io/s/r58pqonkop)
   - [createStore](#api_createStore)
   - [getStoreByName](#api_getStoreByName)
   - [StoreInterface](#api_storeInterface)
-  - [usStore](#api_useStore)
+  - [useStore](#api_useStore)
 - [Migrating from v1.0 to v1.1](#migration)
 
 > ⚠️ BREAKING CHANGES: Version 1.1 is not compatible with previous versions. It is easy to update your previous versions' code to work with it, though. [Click here](#migration) to know how.
