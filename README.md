@@ -56,7 +56,7 @@ function StatefullHello() {
 
 function AnotherComponent() {
   // you can name the state whatever you want
-  const [ timesClicked ] = useStore();
+  const [ timesClicked ] = useStore('clickStore');
   return (
     <div>
       <h1>Hello, this is a second component, with no relation to the one on the top</h1>
