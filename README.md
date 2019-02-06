@@ -21,8 +21,6 @@ Try it on [Codesandbox!](https://codesandbox.io/s/r58pqonkop)
 
 > ⚠️ BREAKING CHANGES: Version 1.1 is not compatible with previous versions. It is easy to update your previous versions' code to work with it, though. [Click here](#migration) to know how.
 
-> ⚠️ Warning: hooks are not part of a stable React release yet, so use this library only for experiments
-
 ## <a name="installation">Installation</a>
 You can install the lib through NPM or grab the files in the `dist` folder of this repository.
 
