@@ -33,15 +33,22 @@ createStore(
 
 export function AddTodo() {
   const [ state, dispatch ] = useStore('todoList');
-
+  let input;
+  
   const onSubmit = (e) => {
     e.preventDefault();
-    const input = e.target.querySelector('input');
+    input = e.target.querySelector('input');
     const todo = input.value;
-    input.value = '';
-    dispatch({ type: 'create', payload: todo });
+    input.value = '.............';
+    input.disabled = true;
+    dispatch({ type: 'create', payload: todo },todoCreated);
   }
 
+  const todoCreated=(newState)=>{
+	input.disabled = false;
+	input.value = '';
+  }
+  
   return (
     <form onSubmit={onSubmit}>
       <input></input>
