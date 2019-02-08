@@ -96,4 +96,36 @@ describe('store', () => {
     store.dispatch('foo');
     expect(reducer).toHaveBeenCalledWith(0, 'foo');
   });
+	
+  test('store.setState callback must return new state', () => {
+	const store = createStore('store7', 'foo');
+	store.setState('bar',(newState)=>{
+		expect(newState).toBe('bar');
+	});
+  });
+
+  test('store.setState callback must return new state', () => {
+	const callback = jest.fn ();
+	const store = createStore('store8', 0);
+	store.setState(10,callback);
+	expect(callback).toHaveBeenCalled();
+  });
+  
+  test('store.dispatch callback must be called', () => {
+    const reducer  = jest.fn ();
+    const callback = jest.fn ();
+	const store = createStore('store9', 'foo', reducer);
+	store.dispatch('bar',callback);
+	expect(callback).toHaveBeenCalled();
+  });
+	
+  test('store.dispatch callback must return new state', () => {
+  	const reducer = (state, action) => action;
+	const store = createStore('store10', 'foo',reducer);
+	store.dispatch('bar',(newState)=>{
+		expect(newState).toBe('bar');
+	});
+  });
+
+  
 });
