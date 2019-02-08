@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { shallow, mount } from 'enzyme';
+import { act } from 'react-dom/test-utils';
 import { createStore, useStore } from '..';
 
 describe('useStore', () => {
   const store = createStore('store', 0);
 
   beforeEach(() => {
-    store.setState(0);
+    act(() => {
+      store.setState(0);
+    })
   });
 
   it('Should throw an error if an inexistent store is referenced', () => {
@@ -88,7 +91,9 @@ describe('useStore', () => {
     renderedComponent.find('button').simulate('click');
     expect(renderedComponent.text()).toBe('This button has been clicked 1 times');
     expect(renderedAnotherComponent.text()).toBe('1');
-    store.setState('Hello');
+    act(() => {
+      store.setState('Hello');
+    })
     expect(renderedComponent.text()).toBe('This button has been clicked Hello times');
     expect(renderedAnotherComponent.text()).toBe('Hello');
   });
@@ -109,14 +114,18 @@ describe('useStore', () => {
     const rendered = mount(<HelloWorld />);
     expect(rendered.text()).toBe('Hello, ! you have been here 0 times!');
 
-    countStore.setState(1);
+    act(() => {
+      countStore.setState(1);
+    })
     expect(rendered.text()).toBe('Hello, ! you have been here 1 times!');
 
-    nameStore.setState('Richard');
+    act(() => {
+      nameStore.setState('Richard');
+    })
     expect(rendered.text()).toBe('Hello, Richard! you have been here 1 times!');
   });
 
-  test('When a component unmounts, the store removes its reference', () => {
+  test.only('When a component unmounts, the store removes its reference', () => {
     const store = createStore('unmountTestStore', 0);
     const consoleError = jest.spyOn(global.console, 'error');
 
@@ -128,10 +137,15 @@ describe('useStore', () => {
 
     const rendered = mount(<Component />);
     expect(rendered.text()).toBe('0');
-    store.setState(1);
+
+    act(() => {
+      store.setState(1);
+    });
     expect(rendered.text()).toBe('1');
     rendered.unmount();
-    store.setState(3);
+    act(() => {
+      store.setState(3);
+    })
 
     // react throws a console error when trying to call setState on unmounted components
     expect(consoleError).not.toHaveBeenCalled();
