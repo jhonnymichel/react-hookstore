@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <StatefulHello />
       <AnotherComponent />
       <h1>Advanced example</h1>
-      <p>A namespace and reducer-powered store</p>
+      <p>A namespace and reducer-powered store, using callback</p>
       <AddTodo />
       <TodoList />
     </React.Fragment>,

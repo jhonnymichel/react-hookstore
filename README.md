@@ -132,16 +132,24 @@ const todoListStore = createStore(
 };
 
 function AddTodo() {
-  const [ { todos }, dispatch ] = useStore(todoListStore);
-
+  const [ state, dispatch ] = useStore('todoList');
+  let input;
+  
   const onSubmit = (e) => {
     e.preventDefault();
-    const input = e.target.querySelector('input');
+    input = e.target.querySelector('input');
     const todo = input.value;
-    input.value = '';
-    dispatch({ type: 'add', payload: todo });
+    input.value = '.............';
+    input.disabled = true;
+    dispatch({ type: 'create', payload: todo },todoCreated);
   }
 
+  const todoCreated=(newState)=>{
+  	console.log(newState)
+	input.disabled = false;
+	input.value = '';
+  }
+  
   return (
     <form onSubmit={onSubmit}>
       <input></input>
@@ -190,10 +198,10 @@ The store instance that is returned by the createStore and getStoreByName method
 The name of the store;
 #### `getState:Function():*`
 A method that returns the store's current state
-#### `setState:Function(state:*)`
-Sets the state of the store. works if the store does not use a reducer state handler. Otherwise, use `dispatch`
-#### `dispatch:Function(action:*)`
-Dispatchs whatever is passed into this function to the store. works if the store uses a reducer state handler. Otherwise, use `setState`
+#### `setState:Function(state:*,callback:Function)`
+Sets the state of the store. works if the store does not use a reducer state handler. Otherwise, use `dispatch`. callback is Optional and will receive new state as argument
+#### `dispatch:Function(action:*,callback:Function)`
+Dispatchs whatever is passed into this function to the store. works if the store uses a reducer state handler. Otherwise, use `setState`. callback is Optional and will receive new state as argument
 
 ## React API
 ### <a name="api_useStore">`useStore(identifier:String|StoreInterface):Array[state, setState|dispatch]`</a>
