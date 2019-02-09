@@ -49,10 +49,10 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
   const store = {
     state,
     reducer,
-    setState(action,callback) {
+    setState(action, callback) {
       this.state = this.reducer(this.state, action);
       this.setters.forEach(setter => setter(this.state));
-	  if(callback) callback(this.state)
+	    if (typeof callback === 'function') callback(this.state)
     },
     setters: []
   };

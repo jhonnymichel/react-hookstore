@@ -133,26 +133,25 @@ const todoListStore = createStore(
 
 function AddTodo() {
   const [ state, dispatch ] = useStore('todoList');
-  let input;
-  
+  // Let's ref the input to make it disabled while submit is being handled
+  const input = React.useRef(null);
+
   const onSubmit = (e) => {
     e.preventDefault();
-    input = e.target.querySelector('input');
-    const todo = input.value;
-    input.value = '.............';
-    input.disabled = true;
-    dispatch({ type: 'create', payload: todo },todoCreated);
+    const todo = input.current.value;
+    input.current.value = '.............';
+    input.current.disabled = true;
+    dispatch({ type: 'create', payload: todo }, todoCreated);
   }
 
-  const todoCreated=(newState)=>{
-  	console.log(newState)
-	input.disabled = false;
-	input.value = '';
+  const todoCreated = (newState) => {
+    input.current.disabled = false;
+    input.current.value = '';
   }
   
   return (
     <form onSubmit={onSubmit}>
-      <input></input>
+      <input ref={input}></input>
       <button>Create TODO</button>
     </form>
   )
@@ -198,10 +197,10 @@ The store instance that is returned by the createStore and getStoreByName method
 The name of the store;
 #### `getState:Function():*`
 A method that returns the store's current state
-#### `setState:Function(state:*,callback:Function)`
-Sets the state of the store. works if the store does not use a reducer state handler. Otherwise, use `dispatch`. callback is Optional and will receive new state as argument
-#### `dispatch:Function(action:*,callback:Function)`
-Dispatchs whatever is passed into this function to the store. works if the store uses a reducer state handler. Otherwise, use `setState`. callback is Optional and will receive new state as argument
+#### `setState:Function(state:*, callback:Function)`
+Sets the state of the store. works if the store does not use a reducer state handler. Otherwise, use `dispatch`. callback is optional and will receive new state as argument
+#### `dispatch:Function(action:*, callback:Function)`
+Dispatchs whatever is passed into this function to the store. works if the store uses a reducer state handler. Otherwise, use `setState`. callback is optional and will receive new state as argument
 
 ## React API
 ### <a name="api_useStore">`useStore(identifier:String|StoreInterface):Array[state, setState|dispatch]`</a>
