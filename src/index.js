@@ -86,6 +86,7 @@ export function useStore(identifier) {
   if (!store) {
     throw 'store does not exist';
   }
+
   const [ state, set ] = useState(store.state);
 
   useEffect(() => () => {

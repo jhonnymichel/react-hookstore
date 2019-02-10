@@ -125,7 +125,7 @@ describe('useStore', () => {
     expect(rendered.text()).toBe('Hello, Richard! you have been here 1 times!');
   });
 
-  test.only('When a component unmounts, the store removes its reference', () => {
+  test('When a component unmounts, the store removes its reference', () => {
     const store = createStore('unmountTestStore', 0);
     const consoleError = jest.spyOn(global.console, 'error');
 
