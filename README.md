@@ -106,71 +106,75 @@ const todoListStore = createStore(
   'todoList',
   {
     idCount: 0,
-    todos: [{ id: 0, text: 'buy milk' }],
+    todos: [{ id: 0, text: 'buy milk' }]
   },
   (state, action) => {
     // when a reducer is being used, you must return a new state object
-    switch action.type {
+    switch (action.type) {
       case 'add':
         const id = ++state.idCount;
         return {
           ...state,
-          todos: [
-            ...todos,
-            { id, text: action.payload }
-          ];
-        }
-      case 'remove':
+          todos: [...state.todos, { id, text: action.payload }]
+        };
+      case 'delete':
         return {
           ...state,
           todos: state.todos.filter(todo => todo.id !== action.payload)
-        }
+        };
       default:
-        return todos;
+        return {
+          ...state,
+          todos: [...state.todos]
+        };
     }
   }
-};
+);
 
 function AddTodo() {
-  const [ state, dispatch ] = useStore('todoList');
+  const [state, dispatch] = useStore('todoList');
   // Let's ref the input to make it disabled while submit is being handled
   const input = React.useRef(null);
 
-  const onSubmit = (e) => {
+  const onSubmit = e => {
     e.preventDefault();
     const todo = input.current.value;
-    input.current.value = '.............';
-    input.current.disabled = true;
-    dispatch({ type: 'create', payload: todo }, todoCreated);
-  }
+    input.current.value = '';
+    dispatch({ type: 'add', payload: todo }, todoCreated);
+  };
 
-  const todoCreated = (newState) => {
+  const todoCreated = newState => {
     input.current.disabled = false;
     input.current.value = '';
-  }
-  
+  };
+
   return (
     <form onSubmit={onSubmit}>
-      <input ref={input}></input>
+      <input ref={input} />
       <button>Create TODO</button>
     </form>
-  )
+  );
 }
 
 function TodoList() {
-  const [ { todos }, dispatch ] = useStore(todoListStore);
-  const deleteTodo = id => dispatch({ type: 'delete', payload: id })
+  const [{ todos }, dispatch] = useStore(todoListStore);
+  const deleteTodo = id => dispatch({ type: 'delete', payload: id });
   return (
     <ul>
       <h2>TODOLIST</h2>
-      { todos.map(todo =>
+      {todos.map(todo => (
         <li key={todo.id}>
-          { todo } <button onClick={() => deleteTodo(id)} type="button">X</button>
-        </li>)
-      }
+          {todo.text}{' '}
+          <button onClick={() => deleteTodo(todo.id)} type="button">
+            X
+          </button>
+        </li>
+      ))}
     </ul>
-  )
+  );
 }
+
+export { TodoList, AddTodo };
 ```
 ## Methods API
 ### <a name="api_createStore">`createStore(name:String, state:*, reducer:Function):StoreInterface`</a>
