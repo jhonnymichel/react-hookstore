@@ -7,7 +7,7 @@ let subscribeCallback = null;
 const defaultReducer = (state, payload) => payload;
 
 export function subscribe(actions, callback) {
-  if (!actions || !Array.isArray(action))
+  if (!actions || !Array.isArray(actions))
     throw "First argument must be an array";
   if (!actions || typeof callback !== "function")
     throw "Second argument must a function";
@@ -66,7 +66,7 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
       if (typeof callback === 'function') callback(this.state)
       if (
         typeof subscribeCallback === "function" &&
-        subscribedActions.includes(action.action)
+        subscribedActions.includes(action.type)
       ) {
         subscribeCallback(action, this.state);
       }

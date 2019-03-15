@@ -1,4 +1,4 @@
-import { createStore, getStoreByName } from '..';
+import { createStore, getStoreByName, subscribe } from '..';
 
 describe('createStore', () => {
   it('Should create an store and return its public interface', () => {
@@ -126,4 +126,16 @@ describe('store', () => {
       expect(newState).toBe('bar');
     });
   });
+
+
+  test('subscribe call works', () => {
+  	const reducer = (state, action) => action;
+    const store = createStore('store11', 'foo', reducer);
+    store.dispatch({type:'bar'});
+    subscribe(['bar'], (action, state) => {
+      expect(state).toBe('bar');
+    })
+  });
+
+  subscribe
 });
