@@ -66,9 +66,10 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
       if (typeof callback === 'function') callback(this.state)
       if (
         typeof subscribeCallback === "function" &&
+        action.type && 
         subscribedActions.includes(action.type)
       ) {
-        subscribeCallback(action, this.state);
+        subscribeCallback(action.type, this.state);
       }
     },
     setters: []

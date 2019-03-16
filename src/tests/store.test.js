@@ -127,15 +127,32 @@ describe('store', () => {
     });
   });
 
-
   test('subscribe call works', () => {
-  	const reducer = (state, action) => action;
-    const store = createStore('store11', 'foo', reducer);
-    store.dispatch({type:'bar'});
-    subscribe(['bar'], (action, state) => {
-      expect(state).toBe('bar');
+  	const reducer = (state, action) => {
+      switch (action.type) {
+        case "increment":
+          return { ...state, count: state.count + 1 };
+        case "decrement":
+          return { ...state, count: state.count -1 };
+        default:
+          return state;
+      }
+    };
+    
+    const store = createStore('store11', { count: 1 }, reducer);
+    subscribe([ 'decrement'], (action, state) => {
+      expect(action).toBe("decrement");
+      expect(state.count).toBe(0);
     })
+    subscribe(['increment'], (action, state) => {
+      expect(action).toBe("increment");
+      expect(state.count).toBe(1);
+    })
+    store.dispatch({type:'decrement'});
+    store.dispatch({type:'increment'});
+  
   });
 
-  subscribe
+
+
 });
