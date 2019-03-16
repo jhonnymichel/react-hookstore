@@ -127,12 +127,20 @@ describe('store', () => {
     });
   });
 
-  test('subscribe call works', () => {
+  test('subscribe needs array as first argument' , () => {
+    expect(() => subscribe(null, () => {})).toThrow()
+  });
+
+  test('subscribe needs function as second argument' , () => {
+    expect(() => subscribe([], null)).toThrow()
+  });
+
+  test('subscribe callback works for individual subscribes', () => {
   	const reducer = (state, action) => {
       switch (action.type) {
-        case "increment":
+        case 'increment':
           return { ...state, count: state.count + 1 };
-        case "decrement":
+        case 'decrement':
           return { ...state, count: state.count -1 };
         default:
           return state;
@@ -145,9 +153,33 @@ describe('store', () => {
       expect(state.count).toBe(0);
     })
     subscribe(['increment'], (action, state) => {
-      expect(action).toBe("increment");
+      expect(action).toBe('increment');
       expect(state.count).toBe(1);
     })
+    store.dispatch({type:'decrement'});
+    store.dispatch({type:'increment'});
+  });
+
+  test('subscribe callback works with multiple actions at once', () => {
+  	const reducer = (state, action) => {
+      switch (action.type) {
+        case 'increment':
+          return { ...state, count: state.count + 1 };
+        case 'decrement':
+          return { ...state, count: state.count -1 };
+        default:
+          return state;
+      }
+    };
+    
+    const store = createStore('store12', { count: 1 }, reducer);
+    subscribe([ 'decrement', 'increment'], (action, state) => {
+      if(action === "decrement")
+        expect(state.count).toBe(0);
+      if(action === "increment")
+        expect(state.count).toBe(1);
+    })
+
     store.dispatch({type:'decrement'});
     store.dispatch({type:'increment'});
   
