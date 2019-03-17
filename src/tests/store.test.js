@@ -132,11 +132,11 @@ describe('store', () => {
   });
 
   test('subscribe needs array as second argument' , () => {
-    expect(() => subscribe(null, () => {})).toThrow()
+    expect(() => subscribe("subscribe1", null, () => {})).toThrow()
   });
 
   test('subscribe needs function as third argument' , () => {
-    expect(() => subscribe([], null)).toThrow()
+    expect(() => subscribe("subscribe2", [], null)).toThrow()
   });
 
   test('subscribe callback works for individual subscribes', () => {
@@ -152,11 +152,11 @@ describe('store', () => {
     };
     
     const store = createStore('store11', { count: 1 }, reducer);
-    subscribe('subscribe1', [ 'decrement'], (action, state) => {
+    subscribe('subscribe3', [ 'decrement'], (action, state) => {
       expect(action).toBe("decrement");
       expect(state.count).toBe(0);
     })
-    subscribe('subscribe2', ['increment'], (action, state) => {
+    subscribe('subscribe4', ['increment'], (action, state) => {
       expect(action).toBe('increment');
       expect(state.count).toBe(1);
     })
@@ -177,7 +177,7 @@ describe('store', () => {
     };
     
     const store = createStore('store12', { count: 1 }, reducer);
-    subscribe('subscribe3',[ 'decrement', 'increment'], (action, state) => {
+    subscribe('subscribe5',[ 'decrement', 'increment'], (action, state) => {
       if(action === "decrement")
         expect(state.count).toBe(0);
       if(action === "increment")
@@ -194,15 +194,15 @@ describe('store', () => {
   });
 
   test('Subsribers need unique identifier', () => {
-    subscribe('subscribe4', ['decrement'], () => {});
-    expect(() => subscribe('subscribe1', [], (action, state) => {})).toThrow();
+    subscribe('subscribe6', ['decrement'], () => {});
+    expect(() => subscribe('subscribe6', [], (action, state) => {})).toThrow();
   });
 
   test('Unsubscribe to certain subscriber', () => {
-    subscribe('subscribe5', ['decrement'], () => {});
-    expect(() => subscribe('subscribe1', [], (action, state) => {})).toThrow();
-    unsubscribe('subscribe5');
-    subscribe('subscribe5', [], () => {});
+    subscribe('subscribe7', ['decrement'], () => {});
+    expect(() => subscribe('subscribe7', [], (action, state) => {})).toThrow();
+    unsubscribe('subscribe7');
+    subscribe('subscribe7', [], () => {});
   });
 
 });
