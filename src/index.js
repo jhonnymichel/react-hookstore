@@ -113,7 +113,7 @@ export function subscribe(id, actions, callback) {
     throw 'First argument must be a string';
   if (!actions || !Array.isArray(actions))
     throw 'Second argument must be an array';
-  if (!actions || typeof callback !== 'function')
+  if (!callback || typeof callback !== 'function')
     throw 'Third argument must a function';
   const subscriberExists =  subsriberExists(id);
   if(subscriberExists)
