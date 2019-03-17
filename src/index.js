@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 
 let stores = {};
-let subscribedActions = [];
-let subscribeCallback = null;
+let subscriptions = {};
 
 const defaultReducer = (state, payload) => payload;
 
@@ -11,8 +10,12 @@ export function subscribe(actions, callback) {
     throw "First argument must be an array";
   if (!actions || typeof callback !== "function")
     throw "Second argument must a function";
-  subscribedActions = actions;
-  subscribeCallback = callback;
+  actions.forEach(action => {
+    if(!subscriptions[action]){
+      subscriptions[action] = [];
+    }
+    subscriptions[action].push(callback)
+  })
 }
 
 class StoreInterface {
@@ -65,11 +68,11 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
       this.setters.forEach(setter => setter(this.state));
       if (typeof callback === 'function') callback(this.state)
       if (
-        typeof subscribeCallback === "function" &&
-        action.type && 
-        subscribedActions.includes(action.type)
+        action && action.type && 
+        subscriptions
       ) {
-        subscribeCallback(action.type, this.state);
+        subscriptions[action.type]
+          .forEach(callback => callback(action.type, this.state))
       }
     },
     setters: []
