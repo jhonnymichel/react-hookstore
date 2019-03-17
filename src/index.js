@@ -5,19 +5,6 @@ let subscriptions = {};
 
 const defaultReducer = (state, payload) => payload;
 
-export function subscribe(actions, callback) {
-  if (!actions || !Array.isArray(actions))
-    throw "First argument must be an array";
-  if (!actions || typeof callback !== "function")
-    throw "Second argument must a function";
-  actions.forEach(action => {
-    if(!subscriptions[action]){
-      subscriptions[action] = [];
-    }
-    subscriptions[action].push(callback)
-  })
-}
-
 class StoreInterface {
   constructor(name, store, useReducer) {
     this.name = name;
@@ -72,7 +59,7 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
         subscriptions
       ) {
         subscriptions[action.type]
-          .forEach(callback => callback(action.type, this.state))
+          .forEach(a => a.callback(action.type, this.state))
       }
     },
     setters: []
@@ -119,4 +106,39 @@ export function useStore(identifier) {
   }
 
   return [ state, store.setState ];
+}
+
+export function subscribe(id, actions, callback) {
+  if (!id || !typeof id === 'string')
+    throw 'First argument must be a string';
+  if (!actions || !Array.isArray(actions))
+    throw 'Second argument must be an array';
+  if (!actions || typeof callback !== 'function')
+    throw 'Third argument must a function';
+  const subscriberExists =  subsriberExists(id);
+  if(subscriberExists)
+    throw 'That subscriber is already registered';
+  actions.forEach(action => {
+    if(!subscriptions[action]){
+      subscriptions[action] = [];
+    }
+    subscriptions[action].push({callback, id})
+  })
+}
+
+function subsriberExists(id) {
+  const keys = Object.keys(subscriptions);
+  return keys.filter(key => subscriptions[key]
+    .find(action => action && action.id === id)
+  ).length > 0
+}
+
+export function unsubscribe(id) {
+  if(!id) throw 'You need to pass an identifier';
+  const keys = Object.keys(subscriptions);
+  return keys.forEach(key => subscriptions[key].forEach((action, i) => {
+    if(action.id === id) {
+      delete subscriptions[key][i];
+    }    
+  }));
 }
