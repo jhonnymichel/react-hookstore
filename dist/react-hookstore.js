@@ -7,7 +7,7 @@
 		exports["hookStore"] = factory(require("react"));
 	else
 		root["hookStore"] = factory(root["React"]);
-})(window, function(__WEBPACK_EXTERNAL_MODULE__0__) {
+})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE__0__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -196,13 +196,14 @@ function createStore(name) {
   var store = {
     state: state,
     reducer: reducer,
-    setState: function setState(action) {
+    setState: function setState(action, callback) {
       var _this = this;
 
       this.state = this.reducer(this.state, action);
       this.setters.forEach(function (setter) {
         return setter(_this.state);
       });
+      if (typeof callback === 'function') callback(this.state);
     },
     setters: []
   };
