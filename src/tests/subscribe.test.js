@@ -63,6 +63,13 @@ describe('subscribe', () => {
     store1.subscribe([], () => {});
   });
 
+  test('can unsubscribe to specific store', () => {
+    store1.subscribe(['decrement'], (action, state) => {});
+    store2.subscribe(['decrement'], (action, state) => {});
+    store1.unsubscribe();
+    store1.subscribe(['decrement'], (action, state) => {});
+  });
+
   test('subscribe callback works with multiple actions', () => {
     store1.subscribe([ 'decrement', 'increment'], (action, state) => {
       if(action === "decrement")
