@@ -11,6 +11,8 @@ class StoreInterface {
     useReducer ?
       this.dispatch = store.setState : this.setState = store.setState;
     this.getState = () => store.state;
+    this.subscribe = subscribe;
+    this.unsubscribe = unsubscribe;
   }
 
   setState() {
@@ -54,12 +56,11 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
       this.state = this.reducer(this.state, action);
       this.setters.forEach(setter => setter(this.state));
       if (typeof callback === 'function') callback(this.state)
-      if (
-        action && action.type && 
-        subscriptions
-      ) {
+      if (action && action.type && 
+        subscriptions[action.type]) {
         subscriptions[action.type]
-          .forEach(a => a.callback(action.type, this.state))
+          .forEach(subscription => subscription.name === name && 
+            subscription.callback(action, this.state));
       }
     },
     setters: []
@@ -108,37 +109,37 @@ export function useStore(identifier) {
   return [ state, store.setState ];
 }
 
-export function subscribe(id, actions, callback) {
-  if (!id || !typeof id === 'string')
-    throw 'First argument must be a string';
+function subscribe(actions, callback) {
   if (!actions || !Array.isArray(actions))
-    throw 'Second argument must be an array';
+    throw 'first argument must be an array';
   if (!callback || typeof callback !== 'function')
-    throw 'Third argument must a function';
-  const subscriberExists =  subsriberExists(id);
-  if(subscriberExists)
-    throw 'That subscriber is already registered';
-  actions.forEach(action => {
-    if(!subscriptions[action]){
-      subscriptions[action] = [];
-    }
-    subscriptions[action].push({callback, id})
-  })
+    throw 'second argument must be a function';
+  if(subsriberExists(this.name)) 
+    throw 'you are already subscribing to this store. unsubscribe to configure a new subscription.';
+    actions.forEach(action => {
+      if(!subscriptions[action]) {
+        subscriptions[action] = [];
+      }
+      subscriptions[action].push({callback, name:this.name});
+    });
 }
 
-function subsriberExists(id) {
+function unsubscribe() {
   const keys = Object.keys(subscriptions);
-  return keys.filter(key => subscriptions[key]
-    .find(action => action && action.id === id)
-  ).length > 0
-}
+  keys
+    .forEach(key => {
+      if(subscriptions[key].length === 1) {
+        delete subscriptions[key];
+      } else {
+        subscriptions[key] = subscriptions[key]
+          .filter((action, i) =>  action.name !== this.name);
+      }
+    });
+};
 
-export function unsubscribe(id) {
-  if(!id) throw 'You need to pass an identifier';
+function subsriberExists(name) {
   const keys = Object.keys(subscriptions);
-  return keys.forEach(key => subscriptions[key].forEach((action, i) => {
-    if(action.id === id) {
-      delete subscriptions[key][i];
-    }    
-  }));
+  return keys.find(key => subscriptions[key]
+    .find(action => action && action.name === name)
+  );
 }

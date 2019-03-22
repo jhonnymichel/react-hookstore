@@ -5,12 +5,12 @@ describe('createStore', () => {
     const store = createStore('store1', 0);
     expect(store.getState()).toBe(0);
     expect(store.name).toBe('store1');
-    expect(Object.keys(store)).toEqual(['name', 'setState', 'getState']);
+    expect(Object.keys(store)).toEqual(['name', 'setState', 'getState', 'subscribe', 'unsubscribe']);
 
     const store2 = createStore('store2', 0, (state, action) => action.payload);
     expect(store2.getState()).toBe(0);
     expect(store2.name).toBe('store2');
-    expect(Object.keys(store2)).toEqual(['name', 'dispatch', 'getState']);
+    expect(Object.keys(store2)).toEqual(['name', 'dispatch', 'getState', 'subscribe', 'unsubscribe']);
   });
 
   it('Should not allow stores with the same name to be created', () => {
@@ -33,7 +33,7 @@ describe('getStoreByName', () => {
     createStore('test');
 
     const store = getStoreByName('test');
-    expect(Object.keys(store)).toEqual(['name', 'setState', 'getState']);
+    expect(Object.keys(store)).toEqual(['name', 'setState', 'getState', 'subscribe', 'unsubscribe']);
     expect(store.name).toBe('test');
   })
 
@@ -125,84 +125,6 @@ describe('store', () => {
     store.dispatch('bar', (newState) => {
       expect(newState).toBe('bar');
     });
-  });
-
-  test('subscribe needs string as first argument' , () => {
-    expect(() => subscribe(null, [], () => {})).toThrow()
-  });
-
-  test('subscribe needs array as second argument' , () => {
-    expect(() => subscribe("subscribe1", null, () => {})).toThrow()
-  });
-
-  test('subscribe needs function as third argument' , () => {
-    expect(() => subscribe("subscribe2", [], null)).toThrow()
-  });
-
-  test('subscribe callback works for individual subscribes', () => {
-  	const reducer = (state, action) => {
-      switch (action.type) {
-        case 'increment':
-          return { ...state, count: state.count + 1 };
-        case 'decrement':
-          return { ...state, count: state.count -1 };
-        default:
-          return state;
-      }
-    };
-    
-    const store = createStore('store11', { count: 1 }, reducer);
-    subscribe('subscribe3', [ 'decrement'], (action, state) => {
-      expect(action).toBe("decrement");
-      expect(state.count).toBe(0);
-    })
-    subscribe('subscribe4', ['increment'], (action, state) => {
-      expect(action).toBe('increment');
-      expect(state.count).toBe(1);
-    })
-    store.dispatch({type:'decrement'});
-    store.dispatch({type:'increment'});
-  });
-
-  test('subscribe callback works with multiple actions at once', () => {
-  	const reducer = (state, action) => {
-      switch (action.type) {
-        case 'increment':
-          return { ...state, count: state.count + 1 };
-        case 'decrement':
-          return { ...state, count: state.count -1 };
-        default:
-          return state;
-      }
-    };
-    
-    const store = createStore('store12', { count: 1 }, reducer);
-    subscribe('subscribe5',[ 'decrement', 'increment'], (action, state) => {
-      if(action === "decrement")
-        expect(state.count).toBe(0);
-      if(action === "increment")
-        expect(state.count).toBe(1);
-    })
-
-    store.dispatch({type:'decrement'});
-    store.dispatch({type:'increment'});
-  });
-
-
-  test('Unsubscribe needs a string identifier' , () => {
-    expect(() => unsubscribe(null)).toThrow()
-  });
-
-  test('Subsribers need unique identifier', () => {
-    subscribe('subscribe6', ['decrement'], () => {});
-    expect(() => subscribe('subscribe6', [], (action, state) => {})).toThrow();
-  });
-
-  test('Unsubscribe to certain subscriber', () => {
-    subscribe('subscribe7', ['decrement'], () => {});
-    expect(() => subscribe('subscribe7', [], (action, state) => {})).toThrow();
-    unsubscribe('subscribe7');
-    subscribe('subscribe7', [], () => {});
   });
 
 });
