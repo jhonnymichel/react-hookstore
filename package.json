@@ -5,10 +5,11 @@
   "main": "dist/react-hookstore.js",
   "module": "src/index.js",
   "jsnext:main": "src/index.js",
+  "types": "src/index.d.ts",
   "scripts": {
     "test": "jest",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
-    "build": "webpack --progress --config webpack.prod.config.js",
+    "build": "tsc && webpack --progress --config webpack.prod.config.js",
     "start": "webpack-dev-server --hot --reload --config webpack.dev.config.js"
   },
   "repository": {
@@ -42,6 +43,7 @@
     "@babel/preset-env": "^7.2.3",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-stage-0": "^7.0.0",
+    "@types/react": "^16.8.12",
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
     "babel-loader": "^8.0.4",
@@ -53,6 +55,7 @@
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
     "regenerator-runtime": "^0.13.1",
+    "typescript": "^3.4.1",
     "webpack": "^4.23.1",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.10",
