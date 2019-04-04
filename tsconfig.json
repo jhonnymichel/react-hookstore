@@ -1,0 +1,7 @@
+{
+    "files": [ "src/index.d.ts" ],
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "strict": true
+    }
+}
