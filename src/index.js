@@ -114,7 +114,7 @@ function subscribe(actions, callback) {
     throw 'first argument must be an array';
   if (!callback || typeof callback !== 'function')
     throw 'second argument must be a function';
-  if(subsriberExists(this.name)) 
+  if( subscriberExists(this.name)) 
     throw 'you are already subscribing to this store. unsubscribe to configure a new subscription.';
     actions.forEach(action => {
       if(!subscriptions[action]) {
@@ -137,7 +137,7 @@ function unsubscribe() {
     });
 };
 
-function subsriberExists(name) {
+function  subscriberExists(name) {
   const keys = Object.keys(subscriptions);
   return keys.find(key => subscriptions[key]
     .find(action => action && action.name === name)
