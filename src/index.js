@@ -98,13 +98,15 @@ export function useStore(identifier) {
 
   const [ state, set ] = useState(store.state);
 
-  useEffect(() => () => {
-    store.setters = store.setters.filter(setter => setter !== set)
-  }, [])
+  useEffect(() => {
+    if (!store.setters.includes(set)) {
+      store.setters.push(set);
+    }
 
-  if (!store.setters.includes(set)) {
-    store.setters.push(set);
-  }
+    return () => {
+      store.setters = store.setters.filter(setter => setter !== set)
+    }
+  }, [])
 
   return [ state, store.setState ];
 }

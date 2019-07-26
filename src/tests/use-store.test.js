@@ -24,7 +24,7 @@ describe('useStore', () => {
     }).toThrow();
   });
 
-  it('Should provide the component with a functional state and setState pair', () => {
+  it('Should provide the component with a functional state and setState pair', (done) => {
     const Component = (props) => {
       const [state, setState] = useStore('store');
 
@@ -36,14 +36,18 @@ describe('useStore', () => {
     }
 
     const rendered = mount(<Component />);
-    expect(rendered.text()).toBe('This button has been clicked 0 times');
-    rendered.find('button').simulate('click');
-    expect(rendered.text()).toBe('This button has been clicked 1 times');
-    rendered.find('button').simulate('click');
-    expect(rendered.text()).toBe('This button has been clicked 2 times');
+
+    setTimeout(() => {
+      expect(rendered.text()).toBe('This button has been clicked 0 times');
+      rendered.find('button').simulate('click');
+      expect(rendered.text()).toBe('This button has been clicked 1 times');
+      rendered.find('button').simulate('click');
+      expect(rendered.text()).toBe('This button has been clicked 2 times');
+      done();
+    }, 0);
   });
 
-  it('Should provide the component with correct store based on class identifier', () => {
+  it('Should provide the component with correct store based on class identifier', (done) => {
     const Component = (props) => {
       const [state, setState] = useStore(store);
 
@@ -55,14 +59,18 @@ describe('useStore', () => {
     }
 
     const rendered = mount(<Component />);
-    expect(rendered.text()).toBe('This button has been clicked 0 times');
-    rendered.find('button').simulate('click');
-    expect(rendered.text()).toBe('This button has been clicked 1 times');
-    rendered.find('button').simulate('click');
-    expect(rendered.text()).toBe('This button has been clicked 2 times');
+
+    setTimeout(() => {
+      expect(rendered.text()).toBe('This button has been clicked 0 times');
+      rendered.find('button').simulate('click');
+      expect(rendered.text()).toBe('This button has been clicked 1 times');
+      rendered.find('button').simulate('click');
+      expect(rendered.text()).toBe('This button has been clicked 2 times');
+      done();
+    }, 0);
   });
 
-  it('Should update all components if setState is called from anywhere', () => {
+  it('Should update all components if setState is called from anywhere', (done) => {
     const Component = (props) => {
       const [state, setState] = useStore('store');
 
@@ -86,19 +94,20 @@ describe('useStore', () => {
     const renderedComponent = mount(<Component />);
     const renderedAnotherComponent = mount(<AnotherComponent />);
 
-    expect(renderedComponent.text()).toBe('This button has been clicked 0 times');
-    expect(renderedAnotherComponent.text()).toBe('0');
-    renderedComponent.find('button').simulate('click');
-    expect(renderedComponent.text()).toBe('This button has been clicked 1 times');
-    expect(renderedAnotherComponent.text()).toBe('1');
-    act(() => {
-      store.setState('Hello');
-    })
-    expect(renderedComponent.text()).toBe('This button has been clicked Hello times');
-    expect(renderedAnotherComponent.text()).toBe('Hello');
+    setTimeout(() => {
+      expect(renderedComponent.text()).toBe('This button has been clicked 0 times');
+      expect(renderedAnotherComponent.text()).toBe('0');
+      renderedComponent.find('button').simulate('click');
+      expect(renderedComponent.text()).toBe('This button has been clicked 1 times');
+      expect(renderedAnotherComponent.text()).toBe('1');
+      act(() => store.setState('Hello'));
+      expect(renderedComponent.text()).toBe('This button has been clicked Hello times');
+      expect(renderedAnotherComponent.text()).toBe('Hello');
+      done();
+    }, 0)
   });
 
-  test('Different stores work in hamorny', () => {
+  test('Different stores work in hamorny', (done) => {
     const countStore = createStore('countStore', 0);
     const nameStore = createStore('nameStore', '');
 
@@ -112,20 +121,24 @@ describe('useStore', () => {
     };
 
     const rendered = mount(<HelloWorld />);
-    expect(rendered.text()).toBe('Hello, ! you have been here 0 times!');
+    
+    setTimeout(() => {
+      expect(rendered.text()).toBe('Hello, ! you have been here 0 times!');
 
-    act(() => {
-      countStore.setState(1);
-    })
-    expect(rendered.text()).toBe('Hello, ! you have been here 1 times!');
-
-    act(() => {
-      nameStore.setState('Richard');
-    })
-    expect(rendered.text()).toBe('Hello, Richard! you have been here 1 times!');
+      act(() => {
+        countStore.setState(1);
+      })
+      expect(rendered.text()).toBe('Hello, ! you have been here 1 times!');
+  
+      act(() => {
+        nameStore.setState('Richard');
+      })
+      expect(rendered.text()).toBe('Hello, Richard! you have been here 1 times!');
+      done();
+    }, 0)
   });
 
-  test('When a component unmounts, the store removes its reference', () => {
+  test('When a component unmounts, the store removes its reference', (done) => {
     const store = createStore('unmountTestStore', 0);
     const consoleError = jest.spyOn(global.console, 'error');
 
@@ -136,18 +149,23 @@ describe('useStore', () => {
     };
 
     const rendered = mount(<Component />);
-    expect(rendered.text()).toBe('0');
 
-    act(() => {
-      store.setState(1);
-    });
-    expect(rendered.text()).toBe('1');
-    rendered.unmount();
-    act(() => {
-      store.setState(3);
-    })
+    
+    setTimeout(() => {
+      expect(rendered.text()).toBe('0');
 
-    // react throws a console error when trying to call setState on unmounted components
-    expect(consoleError).not.toHaveBeenCalled();
+      act(() => {
+        store.setState(1);
+      });
+      expect(rendered.text()).toBe('1');
+      rendered.unmount();
+      act(() => {
+        store.setState(3);
+      })
+  
+      // react throws a console error when trying to call setState on unmounted components
+      expect(consoleError).not.toHaveBeenCalled();
+      done();
+    }, 0)
   });
 });
