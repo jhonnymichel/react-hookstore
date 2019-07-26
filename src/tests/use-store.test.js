@@ -37,14 +37,14 @@ describe('useStore', () => {
 
     const rendered = mount(<Component />);
 
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       expect(rendered.text()).toBe('This button has been clicked 0 times');
       rendered.find('button').simulate('click');
       expect(rendered.text()).toBe('This button has been clicked 1 times');
       rendered.find('button').simulate('click');
       expect(rendered.text()).toBe('This button has been clicked 2 times');
       done();
-    }, 0);
+    });
   });
 
   it('Should provide the component with correct store based on class identifier', (done) => {
@@ -60,14 +60,14 @@ describe('useStore', () => {
 
     const rendered = mount(<Component />);
 
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       expect(rendered.text()).toBe('This button has been clicked 0 times');
       rendered.find('button').simulate('click');
       expect(rendered.text()).toBe('This button has been clicked 1 times');
       rendered.find('button').simulate('click');
       expect(rendered.text()).toBe('This button has been clicked 2 times');
       done();
-    }, 0);
+    });
   });
 
   it('Should update all components if setState is called from anywhere', (done) => {
@@ -94,7 +94,7 @@ describe('useStore', () => {
     const renderedComponent = mount(<Component />);
     const renderedAnotherComponent = mount(<AnotherComponent />);
 
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       expect(renderedComponent.text()).toBe('This button has been clicked 0 times');
       expect(renderedAnotherComponent.text()).toBe('0');
       renderedComponent.find('button').simulate('click');
@@ -104,7 +104,7 @@ describe('useStore', () => {
       expect(renderedComponent.text()).toBe('This button has been clicked Hello times');
       expect(renderedAnotherComponent.text()).toBe('Hello');
       done();
-    }, 0)
+    })
   });
 
   test('Different stores work in hamorny', (done) => {
@@ -122,7 +122,7 @@ describe('useStore', () => {
 
     const rendered = mount(<HelloWorld />);
     
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       expect(rendered.text()).toBe('Hello, ! you have been here 0 times!');
 
       act(() => {
@@ -135,7 +135,7 @@ describe('useStore', () => {
       })
       expect(rendered.text()).toBe('Hello, Richard! you have been here 1 times!');
       done();
-    }, 0)
+    })
   });
 
   test('When a component unmounts, the store removes its reference', (done) => {
@@ -151,7 +151,7 @@ describe('useStore', () => {
     const rendered = mount(<Component />);
 
     
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       expect(rendered.text()).toBe('0');
 
       act(() => {
@@ -166,6 +166,6 @@ describe('useStore', () => {
       // react throws a console error when trying to call setState on unmounted components
       expect(consoleError).not.toHaveBeenCalled();
       done();
-    }, 0)
+    })
   });
 });
