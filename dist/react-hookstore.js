@@ -129,6 +129,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 var stores = {};
+var subscriptions = {};
 
 var defaultReducer = function defaultReducer(state, payload) {
   return payload;
@@ -146,6 +147,9 @@ function () {
     this.getState = function () {
       return store.state;
     };
+
+    this.subscribe = subscribe;
+    this.unsubscribe = unsubscribe;
   }
 
   _createClass(StoreInterface, [{
@@ -204,6 +208,12 @@ function createStore(name) {
         return setter(_this.state);
       });
       if (typeof callback === 'function') callback(this.state);
+
+      if (action && action.type && subscriptions[action.type]) {
+        subscriptions[action.type].forEach(function (subscription) {
+          return subscription.name === name && subscription.callback(action, _this.state);
+        });
+      }
     },
     setters: []
   };
@@ -244,18 +254,61 @@ function useStore(identifier) {
       set = _useState2[1];
 
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
+    if (!store.setters.includes(set)) {
+      store.setters.push(set);
+    }
+
     return function () {
       store.setters = store.setters.filter(function (setter) {
         return setter !== set;
       });
     };
   }, []);
-
-  if (!store.setters.includes(set)) {
-    store.setters.push(set);
-  }
-
   return [state, store.setState];
+}
+
+function subscribe(actions, callback) {
+  var _this2 = this;
+
+  if (!actions || !Array.isArray(actions)) throw 'first argument must be an array';
+  if (!callback || typeof callback !== 'function') throw 'second argument must be a function';
+  if (subscriberExists(this.name)) throw 'you are already subscribing to this store. unsubscribe to configure a new subscription.';
+  actions.forEach(function (action) {
+    if (!subscriptions[action]) {
+      subscriptions[action] = [];
+    }
+
+    subscriptions[action].push({
+      callback: callback,
+      name: _this2.name
+    });
+  });
+}
+
+function unsubscribe() {
+  var _this3 = this;
+
+  var keys = Object.keys(subscriptions);
+  keys.forEach(function (key) {
+    if (subscriptions[key].length === 1) {
+      delete subscriptions[key];
+    } else {
+      subscriptions[key] = subscriptions[key].filter(function (action, i) {
+        return action.name !== _this3.name;
+      });
+    }
+  });
+}
+
+;
+
+function subscriberExists(name) {
+  var keys = Object.keys(subscriptions);
+  return keys.find(function (key) {
+    return subscriptions[key].find(function (action) {
+      return action && action.name === name;
+    });
+  });
 }
 
 /***/ })
