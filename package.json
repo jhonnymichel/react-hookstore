@@ -5,7 +5,7 @@
   "main": "dist/react-hookstore.js",
   "module": "src/index.js",
   "jsnext:main": "src/index.js",
-  "types": "src/index.d.ts",
+  "types": "types/index.d.ts",
   "scripts": {
     "test": "jest",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
@@ -64,6 +64,7 @@
     "react": "^16.8.0"
   },
   "files": [
-    "dist"
+    "dist",
+    "types"
   ]
 }
