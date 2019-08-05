@@ -1,5 +1,5 @@
 {
-    "files": [ "src/index.d.ts" ],
+    "files": [ "types/index.d.ts" ],
     "compilerOptions": {
         "noImplicitAny": true,
         "strict": true
