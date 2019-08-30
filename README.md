@@ -180,9 +180,9 @@ The store's initial state. it can be any data type. defaults to an empty object.
 You can specify a reducer function to take care of state changes. the reducer functions receives two arguments, the previous state and the action that triggered the state update. the function must return a new state, if not, the new state will be `null`. Optional
 
 ### <a name="api_getStoreByName">`getStoreByName(name:String):StoreInterface`</a>
-Finds a store by its name and return its instance.
+Finds a store by its name and returns its instance.
 ### Arguments
-#### `name:String
+#### `name:String`
 The name of the store.
 
 ## Objects API
@@ -194,11 +194,11 @@ The name of the store;
 #### `getState:Function():*`
 A method that returns the store's current state
 #### `setState:Function(state:*, callback?:Function)`
-Sets the state of the store. works if the store does not use a reducer state handler. Otherwise, use `dispatch`. callback is optional and will receive new state as argument
+Sets the state of the store. works if the store does not use a reducer state handler. Otherwise, use `dispatch`. callback is optional and will be invoked once the state is updated, receiving the updated state as argument.
 #### `dispatch:Function(action:*, callback?:Function)`
-Dispatchs whatever is passed into this function to the store. works if the store uses a reducer state handler. Otherwise, use `setState`. callback is optional and will receive new state as argument
+Dispatches whatever is passed into this function to the store. works if the store uses a reducer state handler. Otherwise, use `setState`. callback is optional and will be invoked once the state is updated, receiving the updated state as argument.
 #### `subscribe:Function(callback:Function):unsubscribe:Function`
-subscribe a function to be called everytime a state changes. If the store is reducer-based, the callback function will be called with `action` as the first argument and `state` as the second. otherwise, it'll be called with `state` as the only argument.
+The callback function will be invoked everytime the store state changes. If the store is reducer-based, the callback function will be called with `action` as the first argument and `state` as the second. otherwise, it'll be called with `state` as the only argument.
 
 the subscribe method returns a function that can be called in order to cancel the subscription for the callback function.
 
