@@ -1,98 +1,49 @@
 import { createStore } from '..';
 
-describe('subscribe', () => {
-
-  const reducer = (state, action) => {
-    switch (action.type) {
-        case 'increment':
-            return { ...state, count: state.count + 1 };
-        case 'decrement':
-            return { ...state, count: state.count -1 };
-        case 'reset':
-            return { ...state, count: 1 };
-        default:
-        return state;
-    }
-  };
-  const reducer2 = (state, action) => {
-    switch (action.type) {
-        case 'increment':
-            return { ...state, count: state.count + 1 };
-        case 'decrement':
-            return { ...state, count: state.count -1 };
-        case 'reset':
-            return { ...state, count: 1 };
-        default:
-        return state;
-    }
-  };
-  let store1 = createStore('store1', { count: 1 }, reducer);
-  let store2 = createStore('store2', { count: 1 }, reducer2);
-
-  afterEach(() => {
-    store1.unsubscribe();
-    store2.unsubscribe();
-    store1.dispatch({type:'reset'});
-    store2.dispatch({type:'reset'});
-  })
-  
-  test('subscribe needs array as first argument' , () => {
-    expect(() => store1.subscribe(null, () => {})).toThrow()
+describe('store.subscribe', () => {
+  test('Subscribe needs function as argumentt' , () => {
+    const store = createStore('store1', 0);
+    expect(() => store.subscribe(null)).toThrow()
   });
 
-  test('subscribe needs function as second argument' , () => {
-    expect(() => store1.subscribe([], null)).toThrow()
+  test('Subscribe callback works', () => {
+    const store = createStore('store2', 0);
+    const subscriber = jest.fn();
+    store.subscribe(subscriber);
+    store.setState(1);
+    expect(subscriber).toHaveBeenCalledTimes(1);
+    expect(subscriber).toHaveBeenCalledWith(1, 1);
   });
 
-  test('subscribe callback works', () => {
-    store1.subscribe(['decrement'], (action, state) => {
-      expect(action.type).toBe("decrement");
-      expect(state.count).toBe(0);
-    });
-    store1.dispatch({type:'decrement'});
+  test('Subscribe callback for reducer-based store works', () => {
+    const store = createStore('store3', 0, ((state, action) => state + action.payload));
+    const subscriber = jest.fn();
+    store.subscribe(subscriber);
+    store.dispatch({ type: 'test', payload: 1 });
+    expect(subscriber).toHaveBeenCalledWith({ type: 'test', payload: 1 }, 1);
   });
 
-  test('cant update active subscription', () => {
-    store1.subscribe(['decrement'], (action, state) => {});
-    expect(() => store1.subscribe(['increment'], () => {})).toThrow();
+  test('cant resubscribe with the same function', () => {
+    const store = createStore('store4', 0);
+    const subscriber = jest.fn();
+    store.subscribe(subscriber);
+    store.subscribe(subscriber);
+    store.subscribe(subscriber);
+    store.subscribe(subscriber);
+    store.subscribe(subscriber);
+    store.subscribe(subscriber);
+    expect(subscriber).not.toHaveBeenCalled();
+    store.setState(1);
+    expect(subscriber).toHaveBeenCalledTimes(1);
   });
-  
   test('unsubscribe works', () => {
-    store1.subscribe(['decrement'], (action, state) => {});
-    store1.unsubscribe();
-    store1.subscribe([], () => {});
-  });
-
-  test('can unsubscribe to specific store', () => {
-    store1.subscribe(['decrement'], (action, state) => {});
-    store2.subscribe(['decrement'], (action, state) => {});
-    store1.unsubscribe();
-    store1.subscribe(['decrement'], (action, state) => {});
-  });
-
-  test('subscribe callback works with multiple actions', () => {
-    store1.subscribe([ 'decrement', 'increment'], (action, state) => {
-      if(action === "decrement")
-        expect(state.count).toBe(0);
-      if(action === "increment")
-        expect(state.count).toBe(1);
-    })
-
-    store1.dispatch({type:'decrement'});
-    store1.dispatch({type:'increment'});
-  });
-
-  test('multiple subscriptions works without interfering', () => {
-    store1.subscribe(['decrement'], (action, state) => { 
-        expect(action.type).toBe('decrement');
-        expect(state.count).toBe(0);
-    });
-    store2.subscribe(['increment'], (action, state) => {
-         expect(action.type).toBe('increment');
-         expect(state.count).toBe(2);
-    });
-    store1.dispatch({type:'decrement'});
-    store2.dispatch({type:'increment'});
-  });
-
+    const store = createStore('store5', 0);
+    const subscriber = jest.fn();
+    const unsubscribe = store.subscribe(subscriber);
+    expect(unsubscribe).toBeInstanceOf(Function);
+    store.setState(1);
+    unsubscribe();
+    store.setState(2);
+    expect(subscriber).toHaveBeenCalledTimes(1);
+  })
 });

@@ -5,12 +5,12 @@ describe('createStore', () => {
     const store = createStore('store1', 0);
     expect(store.getState()).toBe(0);
     expect(store.name).toBe('store1');
-    expect(Object.keys(store)).toEqual(['name', 'setState', 'getState', 'subscribe', 'unsubscribe']);
+    expect(Object.keys(store)).toEqual(['name', 'setState', 'getState', 'subscribe']);
 
     const store2 = createStore('store2', 0, (state, action) => action.payload);
     expect(store2.getState()).toBe(0);
     expect(store2.name).toBe('store2');
-    expect(Object.keys(store2)).toEqual(['name', 'dispatch', 'getState', 'subscribe', 'unsubscribe']);
+    expect(Object.keys(store2)).toEqual(['name', 'dispatch', 'getState', 'subscribe']);
   });
 
   it('Should not allow stores with the same name to be created', () => {
@@ -33,7 +33,7 @@ describe('getStoreByName', () => {
     createStore('test');
 
     const store = getStoreByName('test');
-    expect(Object.keys(store)).toEqual(['name', 'setState', 'getState', 'subscribe', 'unsubscribe']);
+    expect(Object.keys(store)).toEqual(['name', 'setState', 'getState', 'subscribe']);
     expect(store.name).toBe('test');
   })
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { createStore, useStore } from '../src';
 
 // this one is more complex, it has a name and a reducer function
@@ -33,25 +33,18 @@ createStore(
 
 export function AddTodo() {
   const [ state, dispatch ] = useStore('todoList');
-  let input;
-  
+  const inputRef = useRef(null);
+
   const onSubmit = (e) => {
     e.preventDefault();
-    input = e.target.querySelector('input');
-    const todo = input.value;
-    input.value = '.............';
-    input.disabled = true;
-    dispatch({ type: 'create', payload: todo },todoCreated);
+    const todo = inputRef.current.value;
+    inputRef.current.value = '';
+    dispatch({ type: 'create', payload: todo });
   }
 
-  const todoCreated=(newState)=>{
-	input.disabled = false;
-	input.value = '';
-  }
-  
   return (
     <form onSubmit={onSubmit}>
-      <input></input>
+      <input ref={inputRef}></input>
       <button>Create TODO</button>
     </form>
   )
