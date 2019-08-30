@@ -18,7 +18,6 @@ Try it on [Codesandbox!](https://codesandbox.io/s/r58pqonkop)
   - [getStoreByName](#api_getStoreByName)
   - [StoreInterface](#api_storeInterface)
   - [useStore](#api_useStore)
-  - [useStore](#api_useStore)
 - [Migrating from v1.0 to v1.1](#migration)
 
 > ⚠️ BREAKING CHANGES: in version 1.4+, `store.subscribe` was simplified. check the [Store Interface API](#api_storeInterface)
