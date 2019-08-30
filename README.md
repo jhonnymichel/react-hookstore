@@ -10,7 +10,7 @@ Try it on [Codesandbox!](https://codesandbox.io/s/r58pqonkop)
 - [Installation](#installation)
 - Usage
   - [Basic](#usage_basic)
-  - [Namespacing and referencing stores](#usage_namespace)
+  - [Referencing stores](#usage_namespace)
   - [Reducer powered stores](#usage_reducer)
 - API
   - [createStore](#api_createStore)
@@ -64,7 +64,7 @@ function AnotherComponent() {
 }
 ```
 
-### <a name="usage_namespace">Namespacing and referencing stores</a>
+### <a name="usage_namespace">Referencing stores</a>
 It is possible to create multiple stores in an app.
 Stores can be referenced by using their instance that is returned by the createStore method, as well as using their name.
 
@@ -109,7 +109,7 @@ const todoListStore = createStore(
     todos: [{ id: 0, text: 'buy milk' }]
   },
   (state, action) => {
-    // when a reducer is being used, you must return a new state object
+    // when a reducer is being used, you must return a new state value
     switch (action.type) {
       case 'add':
         const id = ++state.idCount;
@@ -123,34 +123,25 @@ const todoListStore = createStore(
           todos: state.todos.filter(todo => todo.id !== action.payload)
         };
       default:
-        return {
-          ...state,
-          todos: [...state.todos]
-        };
+        return state;
     }
   }
 );
 
 function AddTodo() {
   const [state, dispatch] = useStore('todoList');
-  // Let's ref the input to make it disabled while submit is being handled
-  const input = React.useRef(null);
+  const inputRef = React.useRef(null);
 
   const onSubmit = e => {
     e.preventDefault();
-    const todo = input.current.value;
-    input.current.value = '';
-    dispatch({ type: 'add', payload: todo }, todoCreated);
-  };
-
-  const todoCreated = newState => {
-    input.current.disabled = false;
-    input.current.value = '';
+    const todo = inputRef.current.value;
+    inputRef.current.value = '';
+    dispatch({ type: 'add', payload: todo });
   };
 
   return (
     <form onSubmit={onSubmit}>
-      <input ref={input} />
+      <input ref={inputRef} />
       <button>Create TODO</button>
     </form>
   );
@@ -177,7 +168,7 @@ function TodoList() {
 export { TodoList, AddTodo };
 ```
 ## Methods API
-### <a name="api_createStore">`createStore(name:String, state:*, reducer:Function):StoreInterface`</a>
+### <a name="api_createStore">`createStore(name:String, state?:*, reducer?:Function):StoreInterface`</a>
 Creates a store to be used across the entire application. Returns a StoreInterface object.
 ### Arguments
 #### `name:String`
@@ -201,10 +192,14 @@ The store instance that is returned by the createStore and getStoreByName method
 The name of the store;
 #### `getState:Function():*`
 A method that returns the store's current state
-#### `setState:Function(state:*, callback:Function)`
+#### `setState:Function(state:*, callback?:Function)`
 Sets the state of the store. works if the store does not use a reducer state handler. Otherwise, use `dispatch`. callback is optional and will receive new state as argument
-#### `dispatch:Function(action:*, callback:Function)`
+#### `dispatch:Function(action:*, callback?:Function)`
 Dispatchs whatever is passed into this function to the store. works if the store uses a reducer state handler. Otherwise, use `setState`. callback is optional and will receive new state as argument
+#### `subscribe:Function(callback:Function):unsubscribe:Function`
+subscribe a function to be called everytime a state changes. If the store is reducer-based, the callback function will be called with `action` as the first argument and `state` as the second. otherwise, it'll be called with `state` as the only argument.
+
+the subscribe method returns a function that can be called in order to cancel the subscription for the callback function.
 
 ## React API
 ### <a name="api_useStore">`useStore(identifier:String|StoreInterface):Array[state, setState|dispatch]`</a>

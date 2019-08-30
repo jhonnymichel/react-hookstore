@@ -11,8 +11,21 @@ class StoreInterface {
     useReducer ?
       this.dispatch = store.setState : this.setState = store.setState;
     this.getState = () => store.state;
-    this.subscribe = subscribe;
-    this.unsubscribe = unsubscribe;
+    this.subscribe = this.subscribe.bind(this);
+  }
+
+  subscribe(callback) {
+    if (!callback || typeof callback !== 'function') {
+      throw `store.subscribe callback argument must be a function. got '${typeof callback}' instead.`;
+    }
+    if (subscriptions[this.name].find(c => c === callback)) {
+      console.warn('This callback is already subscribed to this store. skipping subscription');
+      return;
+    }
+    subscriptions[this.name].push(callback);
+    return () => {
+      subscriptions[this.name] = subscriptions[this.name].filter(c => c !== callback);
+    }
   }
 
   setState() {
@@ -55,17 +68,15 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
     setState(action, callback) {
       this.state = this.reducer(this.state, action);
       this.setters.forEach(setter => setter(this.state));
-      if (typeof callback === 'function') callback(this.state)
-      if (action && action.type && 
-        subscriptions[action.type]) {
-        subscriptions[action.type]
-          .forEach(subscription => subscription.name === name && 
-            subscription.callback(action, this.state));
+      if (subscriptions[name].length) {
+        subscriptions[name].forEach(c => c(action, this.state));
       }
+      if (typeof callback === 'function') callback(this.state)
     },
     setters: []
   };
   store.setState = store.setState.bind(store);
+  subscriptions[name] = [];
   store.public = new StoreInterface(name, store, reducer !== defaultReducer);
 
   stores = Object.assign({}, stores, { [name]: store });
@@ -109,39 +120,4 @@ export function useStore(identifier) {
   }, [])
 
   return [ state, store.setState ];
-}
-
-function subscribe(actions, callback) {
-  if (!actions || !Array.isArray(actions))
-    throw 'first argument must be an array';
-  if (!callback || typeof callback !== 'function')
-    throw 'second argument must be a function';
-  if( subscriberExists(this.name)) 
-    throw 'you are already subscribing to this store. unsubscribe to configure a new subscription.';
-    actions.forEach(action => {
-      if(!subscriptions[action]) {
-        subscriptions[action] = [];
-      }
-      subscriptions[action].push({callback, name:this.name});
-    });
-}
-
-function unsubscribe() {
-  const keys = Object.keys(subscriptions);
-  keys
-    .forEach(key => {
-      if(subscriptions[key].length === 1) {
-        delete subscriptions[key];
-      } else {
-        subscriptions[key] = subscriptions[key]
-          .filter((action, i) =>  action.name !== this.name);
-      }
-    });
-};
-
-function  subscriberExists(name) {
-  const keys = Object.keys(subscriptions);
-  return keys.find(key => subscriptions[key]
-    .find(action => action && action.name === name)
-  );
 }
