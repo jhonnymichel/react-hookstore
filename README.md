@@ -168,6 +168,9 @@ function TodoList() {
 
 export { TodoList, AddTodo };
 ```
+### More examples
+Check out the [Codesandbox demo!](https://codesandbox.io/s/r58pqonkop)
+
 ## Methods API
 ### <a name="api_createStore">`createStore(name:String, state?:*, reducer?:Function):StoreInterface`</a>
 Creates a store to be used across the entire application. Returns a StoreInterface object.
