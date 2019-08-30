@@ -69,7 +69,7 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
       this.state = this.reducer(this.state, action);
       this.setters.forEach(setter => setter(this.state));
       if (subscriptions[name].length) {
-        subscriptions[name].forEach(c => c(action, this.state));
+        subscriptions[name].forEach(c => c(this.state, action));
       }
       if (typeof callback === 'function') callback(this.state)
     },

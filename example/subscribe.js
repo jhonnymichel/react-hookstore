@@ -11,7 +11,7 @@ const store = createStore('clickCounter2', 0);
 const unsubscribe = store.subscribe((state) => {
   alert('You increased the counter!');
   if (state >= 3) {
-    //after three executions, let's unsubscribe to get rid of the alert!
+    //after three executions, lets unsubscribe to get rid of the alert!
     unsubscribe();
   }
 })
