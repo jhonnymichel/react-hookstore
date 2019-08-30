@@ -17,9 +17,10 @@ Try it on [Codesandbox!](https://codesandbox.io/s/r58pqonkop)
   - [getStoreByName](#api_getStoreByName)
   - [StoreInterface](#api_storeInterface)
   - [useStore](#api_useStore)
+  - [useStore](#api_useStore)
 - [Migrating from v1.0 to v1.1](#migration)
 
-> ⚠️ BREAKING CHANGES: Version 1.1 is not compatible with previous versions. It is easy to update your previous versions' code to work with it, though. [Click here](#migration) to know how.
+> ⚠️ BREAKING CHANGES: in version 1.4+, `store.subscribe` was simplified. check the [Store Interface API](#api_storeInterface)
 
 ## <a name="installation">Installation</a>
 You can install the lib through NPM or grab the files in the `dist` folder of this repository.
