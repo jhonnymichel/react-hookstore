@@ -5,6 +5,7 @@ let subscriptions = {};
 
 const defaultReducer = (state, payload) => payload;
 
+/** The public interface of a store */
 class StoreInterface {
   constructor(name, store, useReducer) {
     this.name = name;
@@ -14,6 +15,16 @@ class StoreInterface {
     this.subscribe = this.subscribe.bind(this);
   }
 
+  /**
+   * Subscribe to store changes
+   * @callback callback - The function to be invoked everytime the store is updated
+   * @return {Number} The x value.
+   */
+
+  /**
+  *
+  * @param {callback} state, action
+  */
   subscribe(callback) {
     if (!callback || typeof callback !== 'function') {
       throw `store.subscribe callback argument must be a function. got '${typeof callback}' instead.`;
@@ -85,9 +96,10 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
 
 /**
  * Returns a store instance based on its name
- * @param {String} name - The name of the wanted store
+ * @callback {String} name - The name of the wanted store
  * @returns {StoreInterface} the store instance
  */
+
 export function getStoreByName(name) {
   try {
     return stores[name].public;
