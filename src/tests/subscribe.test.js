@@ -20,7 +20,7 @@ describe('store.subscribe', () => {
     const subscriber = jest.fn();
     store.subscribe(subscriber);
     store.dispatch({ type: 'test', payload: 1 });
-    expect(subscriber).toHaveBeenCalledWith({ type: 'test', payload: 1 }, 1);
+    expect(subscriber).toHaveBeenCalledWith(1, { type: 'test', payload: 1 });
   });
 
   test('cant resubscribe with the same function', () => {
