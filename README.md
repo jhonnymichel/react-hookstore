@@ -12,6 +12,7 @@ Try it on [Codesandbox!](https://codesandbox.io/s/r58pqonkop)
   - [Basic](#usage_basic)
   - [Referencing stores](#usage_namespace)
   - [Reducer powered stores](#usage_reducer)
+  - [More examples](https://codesandbox.io/s/r58pqonkop)
 - API
   - [createStore](#api_createStore)
   - [getStoreByName](#api_getStoreByName)
