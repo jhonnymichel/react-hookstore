@@ -18,7 +18,7 @@ class StoreInterface {
   /**
    * Subscribe to store changes
    * @callback callback - The function to be invoked everytime the store is updated
-   * @return {Number} The x value.
+   * @return {Function} - Call the function returned by the method to cancel the subscription
    */
 
   /**
