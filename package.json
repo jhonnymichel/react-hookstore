@@ -1,6 +1,6 @@
 {
   "name": "react-hookstore",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A state management library for react using the bleeding edge hooks feature",
   "main": "dist/react-hookstore.js",
   "module": "src/index.js",
