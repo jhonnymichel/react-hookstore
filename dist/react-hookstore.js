@@ -121,6 +121,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -134,6 +136,8 @@ var subscriptions = {};
 var defaultReducer = function defaultReducer(state, payload) {
   return payload;
 };
+/** The public interface of a store */
+
 
 var StoreInterface =
 /*#__PURE__*/
@@ -148,11 +152,44 @@ function () {
       return store.state;
     };
 
-    this.subscribe = subscribe;
-    this.unsubscribe = unsubscribe;
+    this.subscribe = this.subscribe.bind(this);
   }
+  /**
+   * Subscribe to store changes
+   * @callback callback - The function to be invoked everytime the store is updated
+   * @return {Function} - Call the function returned by the method to cancel the subscription
+   */
+
+  /**
+  *
+  * @param {callback} state, action
+  */
+
 
   _createClass(StoreInterface, [{
+    key: "subscribe",
+    value: function subscribe(callback) {
+      var _this = this;
+
+      if (!callback || typeof callback !== 'function') {
+        throw "store.subscribe callback argument must be a function. got '".concat(_typeof(callback), "' instead.");
+      }
+
+      if (subscriptions[this.name].find(function (c) {
+        return c === callback;
+      })) {
+        console.warn('This callback is already subscribed to this store. skipping subscription');
+        return;
+      }
+
+      subscriptions[this.name].push(callback);
+      return function () {
+        subscriptions[_this.name] = subscriptions[_this.name].filter(function (c) {
+          return c !== callback;
+        });
+      };
+    }
+  }, {
     key: "setState",
     value: function setState() {
       console.warn("[React Hookstore] Store ".concat(this.name, " uses a reducer to handle its state updates. use dispatch instead of setState"));
@@ -201,30 +238,32 @@ function createStore(name) {
     state: state,
     reducer: reducer,
     setState: function setState(action, callback) {
-      var _this = this;
+      var _this2 = this;
 
       this.state = this.reducer(this.state, action);
       this.setters.forEach(function (setter) {
-        return setter(_this.state);
+        return setter(_this2.state);
       });
-      if (typeof callback === 'function') callback(this.state);
 
-      if (action && action.type && subscriptions[action.type]) {
-        subscriptions[action.type].forEach(function (subscription) {
-          return subscription.name === name && subscription.callback(action, _this.state);
+      if (subscriptions[name].length) {
+        subscriptions[name].forEach(function (c) {
+          return c(_this2.state, action);
         });
       }
+
+      if (typeof callback === 'function') callback(this.state);
     },
     setters: []
   };
   store.setState = store.setState.bind(store);
+  subscriptions[name] = [];
   store.public = new StoreInterface(name, store, reducer !== defaultReducer);
   stores = Object.assign({}, stores, _defineProperty({}, name, store));
   return store.public;
 }
 /**
  * Returns a store instance based on its name
- * @param {String} name - The name of the wanted store
+ * @callback {String} name - The name of the wanted store
  * @returns {StoreInterface} the store instance
  */
 
@@ -265,50 +304,6 @@ function useStore(identifier) {
     };
   }, []);
   return [state, store.setState];
-}
-
-function subscribe(actions, callback) {
-  var _this2 = this;
-
-  if (!actions || !Array.isArray(actions)) throw 'first argument must be an array';
-  if (!callback || typeof callback !== 'function') throw 'second argument must be a function';
-  if (subscriberExists(this.name)) throw 'you are already subscribing to this store. unsubscribe to configure a new subscription.';
-  actions.forEach(function (action) {
-    if (!subscriptions[action]) {
-      subscriptions[action] = [];
-    }
-
-    subscriptions[action].push({
-      callback: callback,
-      name: _this2.name
-    });
-  });
-}
-
-function unsubscribe() {
-  var _this3 = this;
-
-  var keys = Object.keys(subscriptions);
-  keys.forEach(function (key) {
-    if (subscriptions[key].length === 1) {
-      delete subscriptions[key];
-    } else {
-      subscriptions[key] = subscriptions[key].filter(function (action, i) {
-        return action.name !== _this3.name;
-      });
-    }
-  });
-}
-
-;
-
-function subscriberExists(name) {
-  var keys = Object.keys(subscriptions);
-  return keys.find(function (key) {
-    return subscriptions[key].find(function (action) {
-      return action && action.name === name;
-    });
-  });
 }
 
 /***/ })
