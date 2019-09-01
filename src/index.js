@@ -10,9 +10,8 @@ const defaultMapDependencies = (state) => state;
 class StoreInterface {
   constructor(name, store, useReducer) {
     this.name = name;
-    const setState = store.setState.bind(store, defaultMapDependencies);
     useReducer ?
-      this.dispatch = setState : this.setState = setState;
+      this.dispatch = store.setState : this.setState = store.setState;
     this.getState = () => store.state;
     this.subscribe = this.subscribe.bind(this);
   }
@@ -81,23 +80,31 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
   const store = {
     state,
     reducer,
-    setState(mapDependency, action, callback) {
+    setState(action, callback) {
       if (this.reducer === defaultReducer && action === this.state && typeof action !== 'object') {
+        console.log('basic memoization, not updating');
         if (typeof callback === 'function') callback(this.state)
         return;
       }
       const currentState = this.state;
       const newState = this.reducer(this.state, action);
-      const prevResult = mapDependency(currentState);
-      const newResult = mapDependency(newState);
-      if (prevResult === newResult) {
-        if (typeof callback === 'function') callback(this.state);
-        return;
-      }
       this.state = newState;
-      for (let setter of this.setters.get(mapDependency)) {
-        setter(this.state);
-      }
+      console.log(this.setters);
+      this.setters.forEach((_, mapDependency) => {
+        if (this.setters.get(mapDependency).length) {
+          return;
+        }
+        const prevResult = mapDependency(currentState);
+        const newResult = mapDependency(newState);
+        if (prevResult === newResult) {
+          console.log('advanced memoization, not updating');
+          return;
+        }
+        for (let setter of this.setters.get(mapDependency)) {
+          setter(this.state);
+          console.log('updating');
+        }
+      });
       if (subscriptions[name].length) {
         subscriptions[name].forEach(c => c(this.state, action));
       }
@@ -143,21 +150,24 @@ export function useStore(identifier, mapDependency=defaultMapDependencies) {
 
   const [ state, set ] = useState(store.state);
 
-  if (!store.setters.get(mapDependency)) {
-    store.setters.set(mapDependency, new Set());
-  }
-
-  const setters = store.setters.get(mapDependency);
-
   useEffect(() => {
+    if (!store.setters.get(mapDependency)) {
+      store.setters.set(mapDependency, new Set());
+    }
+  
+    const setters = store.setters.get(mapDependency);
+
     if (!setters.has(set)) {
       setters.add(set);
     }
 
     return () => {
       setters.delete(set);
+      if (!setters.length) {
+        store.setters.delete(mapDependency);
+      }
     }
   }, [])
 
-  return [ state, (...args) => store.setState(mapDependency, ...args) ];
+  return [ state, store.setState];
 }
