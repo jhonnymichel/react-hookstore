@@ -79,19 +79,29 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
   const store = {
     state,
     reducer,
-    setState(action, callback) {
+    setState(mapDependency, action, callback) {
       if (this.reducer === defaultReducer && action === this.state && typeof action !== 'object') {
         if (typeof callback === 'function') callback(this.state)
         return;
       }
-      this.state = this.reducer(this.state, action);
-      this.setters.forEach(setter => setter(this.state));
+      const currentState = this.state;
+      const newState = this.reducer(this.state, action);
+      const prevResult = mapDependency(currentState);
+      const newResult = mapDependency(newState);
+      if (prevResult === newResult) {
+        if (typeof callback === 'function') callback(this.state);
+        return;
+      }
+      this.state = newState;
+      for (let setter of this.setters.get(mapDependency)) {
+        setter(this.state);
+      }
       if (subscriptions[name].length) {
         subscriptions[name].forEach(c => c(this.state, action));
       }
       if (typeof callback === 'function') callback(this.state)
     },
-    setters: []
+    setters: new Map(),
   };
   store.setState = store.setState.bind(store);
   subscriptions[name] = [];
@@ -115,25 +125,39 @@ export function getStoreByName(name) {
   }
 }
 
+const defaultMapDependencies = (state) => state;
+
 /**
  * Returns a [ state, setState ] pair for the selected store. Can only be called within React Components
  * @param {String|StoreInterface} identifier - The identifier for the wanted store
  * @returns {Array} the [state, setState] pair.
  */
-export function useStore(identifier) {
+export function useStore(identifier, mapDependency=defaultMapDependencies) {
   const store = getStoreByIdentifier(identifier);
+  if (!store) {
+    throw 'store does not exist';
+  }
+  if (typeof mapDependency !== 'function') {
+    throw 'dependencyMap must be a function';
+  }
 
   const [ state, set ] = useState(store.state);
 
+  if (!store.setters.get(mapDependency)) {
+    store.setters.set(mapDependency, new Set());
+  }
+
+  const setters = store.setters.get(mapDependency);
+
   useEffect(() => {
-    if (!store.setters.includes(set)) {
-      store.setters.push(set);
+    if (!setters.has(set)) {
+      setters.add(set);
     }
 
     return () => {
-      store.setters = store.setters.filter(setter => setter !== set)
+      setters.remove(set);
     }
   }, [])
 
-  return [ state, store.setState ];
+  return [ state, (...args) => store.setState(mapDependency, ...args) ];
 }
