@@ -4,13 +4,15 @@ let stores = {};
 let subscriptions = {};
 
 const defaultReducer = (state, payload) => payload;
+const defaultMapDependencies = (state) => state;
 
 /** The public interface of a store */
 class StoreInterface {
   constructor(name, store, useReducer) {
     this.name = name;
+    const setState = store.setState.bind(store, defaultMapDependencies);
     useReducer ?
-      this.dispatch = store.setState : this.setState = store.setState;
+      this.dispatch = setState : this.setState = setState;
     this.getState = () => store.state;
     this.subscribe = this.subscribe.bind(this);
   }
@@ -105,8 +107,8 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
   };
   store.setState = store.setState.bind(store);
   subscriptions[name] = [];
+  store.setters.set(defaultMapDependencies, new Set())
   store.public = new StoreInterface(name, store, reducer !== defaultReducer);
-
   stores = Object.assign({}, stores, { [name]: store });
   return store.public;
 }
@@ -124,8 +126,6 @@ export function getStoreByName(name) {
     throw `Store with name ${name} does not exist`;
   }
 }
-
-const defaultMapDependencies = (state) => state;
 
 /**
  * Returns a [ state, setState ] pair for the selected store. Can only be called within React Components
@@ -155,7 +155,7 @@ export function useStore(identifier, mapDependency=defaultMapDependencies) {
     }
 
     return () => {
-      setters.remove(set);
+      setters.delete(set);
     }
   }, [])
 
