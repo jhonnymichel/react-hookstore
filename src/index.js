@@ -80,6 +80,10 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
     state,
     reducer,
     setState(action, callback) {
+      if (this.reducer === defaultReducer && action === this.state && typeof action !== 'object') {
+        if (typeof callback === 'function') callback(this.state)
+        return;
+      }
       this.state = this.reducer(this.state, action);
       this.setters.forEach(setter => setter(this.state));
       if (subscriptions[name].length) {
