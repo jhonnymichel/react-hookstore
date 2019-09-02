@@ -50,6 +50,9 @@ class StoreInterface {
 
 function getStoreByIdentifier(identifier) {
   const name = identifier instanceof StoreInterface ? identifier.name : identifier;
+  if (!stores[name]) {
+    throw `Store with name ${name} does not exist`;
+  }
   return stores[name];
 }
 
@@ -67,10 +70,10 @@ function getStoreByIdentifier(identifier) {
   */
 export function createStore(name, state = {}, reducer=defaultReducer) {
   if (typeof name !== 'string') {
-    throw 'store name must be a string';
+    throw 'Store name must be a string';
   }
   if (stores[name]) {
-    throw 'store already exists'
+    throw `Store with name ${name} already exists`;
   }
 
   const store = {
@@ -104,7 +107,7 @@ export function getStoreByName(name) {
   try {
     return stores[name].public;
   } catch(e) {
-    throw 'store does not exist';
+    throw `Store with name ${name} does not exist`;
   }
 }
 
@@ -115,9 +118,6 @@ export function getStoreByName(name) {
  */
 export function useStore(identifier) {
   const store = getStoreByIdentifier(identifier);
-  if (!store) {
-    throw 'store does not exist';
-  }
 
   const [ state, set ] = useState(store.state);
 
