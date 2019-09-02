@@ -2,7 +2,7 @@
 declare module 'react-hookstore' {
     type StateCallback<TState> = (state: TState) => void;
 
-    type ReducerType<TState> = (state: TState, payload: any) => TState;
+    type ReducerType<TState, TPayload = any> = (state: TState, payload: TPayload) => TState;
 
     type SetStateType<TState> = (state: TState, callback?: StateCallback<TState>) => void;
 
