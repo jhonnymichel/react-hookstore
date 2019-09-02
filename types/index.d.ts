@@ -22,6 +22,8 @@ declare module 'react-hookstore' {
     }
 
     export interface StateStoreInterface<TState> {
+        readonly name: string;
+        getState(): TState;
         setState(state: TState, callback?: StateCallback<TState>): void;
     }
 
