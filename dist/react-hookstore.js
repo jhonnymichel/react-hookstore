@@ -206,6 +206,11 @@ function () {
 
 function getStoreByIdentifier(identifier) {
   var name = identifier instanceof StoreInterface ? identifier.name : identifier;
+
+  if (!stores[name]) {
+    throw "Store with name ".concat(name, " does not exist");
+  }
+
   return stores[name];
 }
 /**
@@ -227,11 +232,11 @@ function createStore(name) {
   var reducer = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : defaultReducer;
 
   if (typeof name !== 'string') {
-    throw 'store name must be a string';
+    throw 'Store name must be a string';
   }
 
   if (stores[name]) {
-    throw 'store already exists';
+    throw "Store with name ".concat(name, " already exists");
   }
 
   var store = {
@@ -271,7 +276,7 @@ function getStoreByName(name) {
   try {
     return stores[name].public;
   } catch (e) {
-    throw 'store does not exist';
+    throw "Store with name ".concat(name, " does not exist");
   }
 }
 /**
@@ -282,10 +287,6 @@ function getStoreByName(name) {
 
 function useStore(identifier) {
   var store = getStoreByIdentifier(identifier);
-
-  if (!store) {
-    throw 'store does not exist';
-  }
 
   var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(store.state),
       _useState2 = _slicedToArray(_useState, 2),
