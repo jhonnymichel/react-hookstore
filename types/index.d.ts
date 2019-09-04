@@ -42,4 +42,5 @@ declare module 'react-hookstore' {
     export function useStore<TState>(store: StateStoreInterface<TState>): StoreStateHookType<TState>;
 
     export function useStore<TState>(store: ReducerStoreInterface<TState>): StoreDispatchHookType<TState>;
+    export function useStore<TState, TPayload>(store: ReducerStoreInterface<TState, TPayload>): StoreDispatchHookType<TState, TPayload>;
 }
