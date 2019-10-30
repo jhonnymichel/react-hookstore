@@ -27,6 +27,8 @@ declare module 'react-hookstore' {
   }
 
   export interface ReducerStoreInterface<TState, TPayload = any> {
+      readonly name: string;
+      getState(): TState;
       dispatch<TPayload>(payload: TPayload, callback?: StateCallback<TState>): void;
   }
 
