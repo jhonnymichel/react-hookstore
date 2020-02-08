@@ -86,35 +86,35 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
         if (typeof callback === 'function') callback(this.state)
         return;
       }
+      
       const currentState = this.state;
       const newState = this.reducer(this.state, action);
       this.state = newState;
-      console.log(this.setters);
-      this.setters.forEach((_, mapDependency) => {
-        if (this.setters.get(mapDependency).length) {
-          return;
-        }
+
+      this.settersPerDependency.forEach((setters, mapDependency) => {
         const prevResult = mapDependency(currentState);
         const newResult = mapDependency(newState);
         if (prevResult === newResult) {
           console.log('advanced memoization, not updating');
           return;
         }
-        for (let setter of this.setters.get(mapDependency)) {
+        for (let setter of setters) {
           setter(this.state);
           console.log('updating');
         }
       });
+
       if (subscriptions[name].length) {
         subscriptions[name].forEach(c => c(this.state, action));
       }
+
       if (typeof callback === 'function') callback(this.state)
     },
-    setters: new Map(),
+    settersPerDependency: new Map(),
   };
   store.setState = store.setState.bind(store);
   subscriptions[name] = [];
-  store.setters.set(defaultMapDependencies, new Set())
+  store.settersPerDependency.set(defaultMapDependencies, new Set())
   store.public = new StoreInterface(name, store, reducer !== defaultReducer);
   stores = Object.assign({}, stores, { [name]: store });
   return store.public;
@@ -151,20 +151,20 @@ export function useStore(identifier, mapDependency=defaultMapDependencies) {
   const [ state, set ] = useState(store.state);
 
   useEffect(() => {
-    if (!store.setters.get(mapDependency)) {
-      store.setters.set(mapDependency, new Set());
+    if (!store.settersPerDependency.has(mapDependency)) {
+      store.settersPerDependency.set(mapDependency, new Set());
     }
   
-    const setters = store.setters.get(mapDependency);
+    const settersPerDependency = store.settersPerDependency.get(mapDependency);
 
-    if (!setters.has(set)) {
-      setters.add(set);
+    if (!settersPerDependency.has(set)) {
+      settersPerDependency.add(set);
     }
 
     return () => {
-      setters.delete(set);
-      if (!setters.length) {
-        store.setters.delete(mapDependency);
+      settersPerDependency.delete(set);
+      if (!settersPerDependency.size) {
+        store.settersPerDependency.delete(mapDependency);
       }
     }
   }, [])
