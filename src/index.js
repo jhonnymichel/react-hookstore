@@ -4,7 +4,7 @@ let stores = {};
 let subscriptions = {};
 
 const defaultReducer = (state, payload) => payload;
-const defaultMapDependencies = (state) => state;
+const defaultMemoFn = (state) => state;
 
 /** The public interface of a store */
 class StoreInterface {
@@ -81,8 +81,12 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
     state,
     reducer,
     setState(action, callback) {
-      if (this.reducer === defaultReducer && action === this.state && typeof action !== 'object') {
-        console.log('basic memoization, not updating');
+      const isPrimitiveStateWithoutReducerAndIsPreviousState =
+        this.reducer === defaultReducer
+          && action === this.state
+          && typeof action !== 'object';
+
+      if (isPrimitiveStateWithoutReducerAndIsPreviousState) {
         if (typeof callback === 'function') callback(this.state)
         return;
       }
@@ -91,16 +95,14 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
       const newState = this.reducer(this.state, action);
       this.state = newState;
 
-      this.settersPerDependency.forEach((setters, mapDependency) => {
-        const prevResult = mapDependency(currentState);
-        const newResult = mapDependency(newState);
+      this.updatersPerMemoFunction.forEach((updaters, memoFn) => {
+        const prevResult = memoFn(currentState);
+        const newResult = memoFn(newState);
         if (prevResult === newResult) {
-          console.log('advanced memoization, not updating');
           return;
         }
-        for (let setter of setters) {
-          setter(this.state);
-          console.log('updating');
+        for (let updateComponent of updaters) {
+          updateComponent(this.state);
         }
       });
 
@@ -110,13 +112,15 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
 
       if (typeof callback === 'function') callback(this.state)
     },
-    settersPerDependency: new Map(),
+    updatersPerMemoFunction: new Map(),
   };
+
   store.setState = store.setState.bind(store);
-  subscriptions[name] = [];
-  store.settersPerDependency.set(defaultMapDependencies, new Set())
-  store.public = new StoreInterface(name, store, reducer !== defaultReducer);
+  store.updatersPerMemoFunction.set(defaultMemoFn, new Set())
   stores = Object.assign({}, stores, { [name]: store });
+  subscriptions[name] = [];
+
+  store.public = new StoreInterface(name, store, reducer !== defaultReducer);
   return store.public;
 }
 
@@ -137,34 +141,40 @@ export function getStoreByName(name) {
 /**
  * Returns a [ state, setState ] pair for the selected store. Can only be called within React Components
  * @param {String|StoreInterface} identifier - The identifier for the wanted store
+ * @callback memoFn [state => state] - A memoization function to optimize component rerender. Receive the store state and return a subset of it. The component will only rerender when the subset changes.
  * @returns {Array} the [state, setState] pair.
  */
-export function useStore(identifier, mapDependency=defaultMapDependencies) {
+
+/**
+  *
+  * @param {memoFn} state
+  */
+export function useStore(identifier, memoFn=defaultMemoFn) {
   const store = getStoreByIdentifier(identifier);
   if (!store) {
     throw 'store does not exist';
   }
-  if (typeof mapDependency !== 'function') {
-    throw 'dependencyMap must be a function';
+  if (typeof memoFn !== 'function') {
+    throw 'memoFn must be a function';
   }
 
   const [ state, set ] = useState(store.state);
 
   useEffect(() => {
-    if (!store.settersPerDependency.has(mapDependency)) {
-      store.settersPerDependency.set(mapDependency, new Set());
+    if (!store.updatersPerMemoFunction.has(memoFn)) {
+      store.updatersPerMemoFunction.set(memoFn, new Set());
     }
   
-    const settersPerDependency = store.settersPerDependency.get(mapDependency);
+    const updatersPerMemoFunction = store.updatersPerMemoFunction.get(memoFn);
 
-    if (!settersPerDependency.has(set)) {
-      settersPerDependency.add(set);
+    if (!updatersPerMemoFunction.has(set)) {
+      updatersPerMemoFunction.add(set);
     }
 
     return () => {
-      settersPerDependency.delete(set);
-      if (!settersPerDependency.size) {
-        store.settersPerDependency.delete(mapDependency);
+      updatersPerMemoFunction.delete(set);
+      if (!updatersPerMemoFunction.size) {
+        store.updatersPerMemoFunction.delete(memoFn);
       }
     }
   }, [])
