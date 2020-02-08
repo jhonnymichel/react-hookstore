@@ -86,7 +86,7 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
         if (typeof callback === 'function') callback(this.state)
         return;
       }
-      
+
       const currentState = this.state;
       const newState = this.reducer(this.state, action);
       this.state = newState;
