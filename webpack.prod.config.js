@@ -47,17 +47,7 @@ const minConfig = {
   },
 };
 
-const demoConfig = {
-  optimization: minConfig.optimization,
-  output: {
-    path: path.resolve(__dirname, 'docs'),
-    filename: 'demo.js'
-  },
-  externals: [],
-}
-
 module.exports = [
   merge(config, umdConfig),
-  merge(umdConfig, minConfig),
-  { ...devConfig, ...umdConfig, ...demoConfig }
+  merge(umdConfig, minConfig)
 ];

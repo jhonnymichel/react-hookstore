@@ -11,6 +11,7 @@ Try it on [Codesandbox!](https://codesandbox.io/s/r58pqonkop)
   - [Basic](#usage_basic)
   - [Referencing stores](#usage_namespace)
   - [Using reducers to update state](#usage_reducer)
+  - [Optimizing performance](#optimizing_performance)
   - [More examples](https://codesandbox.io/s/r58pqonkop)
 - API
   - [createStore](#api_createStore)
@@ -174,6 +175,7 @@ Steps to reproduce:
 - Later, call `useStore` inside components to retrieve its state and dispatch method.
 - call dispatch and provide data as the first argument. Although data can be anything, we are using the pattern of `{ type, payload }`, made popular by redux.
 
+### Optimizing performance
 
 ### More examples
 Check out the [Codesandbox demo!](https://codesandbox.io/s/r58pqonkop)
@@ -213,11 +215,13 @@ The callback function will be invoked everytime the store state changes. If the 
 the subscribe method returns a function that can be called in order to cancel the subscription for the callback function.
 
 ## React API
-### <a name="api_useStore">`useStore(identifier) -> [state, setState|dispatch]`</a>
+### <a name="api_useStore">`useStore(identifier, memoFn?) -> [state, setState|dispatch]`</a>
 A function that returns a pair with the current state and a function to trigger state updates for the specified store.
 ### Arguments
-#### Identifier: String|StoreInterface
+#### `Identifier: String|StoreInterface`
 The store identifier. It can be either its string name or its StoreInterface instance returned by a createStore or getStoreByName method.
+#### `memoFn: (state) -> any`
+A function to optimize performance. return the subset of the state the component is dependent on. The component will only be updated when the subset changes. Optional.
 
 # <a name="migration">Migrating from v1.0 to v1.1</a>
 - createStore now receives 3 arguments instead of an object with 3 properties.

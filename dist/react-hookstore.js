@@ -136,6 +136,10 @@ var subscriptions = {};
 var defaultReducer = function defaultReducer(state, payload) {
   return payload;
 };
+
+var defaultMemoFn = function defaultMemoFn(state) {
+  return state;
+};
 /** The public interface of a store */
 
 
@@ -156,14 +160,9 @@ function () {
   }
   /**
    * Subscribe to store changes
-   * @callback callback - The function to be invoked everytime the store is updated
+   * @param {(state:any, data:any) => void} callback - The function to be invoked everytime the store is updated
    * @return {Function} - Call the function returned by the method to cancel the subscription
    */
-
-  /**
-  *
-  * @param {callback} state, action
-  */
 
 
   _createClass(StoreInterface, [{
@@ -189,14 +188,24 @@ function () {
         });
       };
     }
+    /**
+     * Set the store state
+     * @param {any} data - The new state value.
+     */
+
   }, {
     key: "setState",
-    value: function setState() {
+    value: function setState(data) {
       console.warn("[React Hookstore] Store ".concat(this.name, " uses a reducer to handle its state updates. use dispatch instead of setState"));
     }
+    /**
+     * Dispatch data to the store reducer
+     * @param {any} data - The data payload the reducer receives
+     */
+
   }, {
     key: "dispatch",
-    value: function dispatch() {
+    value: function dispatch(data) {
       console.warn("[React Hookstore] Store ".concat(this.name, " does not use a reducer to handle state updates. use setState instead of dispatch"));
     }
   }]);
@@ -217,13 +226,8 @@ function getStoreByIdentifier(identifier) {
  * Creates a new store
  * @param {String} name - The store namespace.
  * @param {*} state [{}] - The store initial state. It can be of any type.
- * @callback reducer [null]
+ * @param {(state:any, data:any) => any} reducer [null] - The reducer handler. Optional
  * @returns {StoreInterface} The store instance.
- */
-
-/**
- *
- * @param {reducer} prevState, action - The reducer handler. Optional.
  */
 
 
@@ -242,33 +246,72 @@ function createStore(name) {
   var store = {
     state: state,
     reducer: reducer,
-    setState: function setState(action, callback) {
+    setState: function setState(data, callback) {
       var _this2 = this;
 
-      this.state = this.reducer(this.state, action);
-      this.setters.forEach(function (setter) {
-        return setter(_this2.state);
+      var isPrimitiveStateWithoutReducerAndIsPreviousState = this.reducer === defaultReducer && data === this.state && _typeof(data) !== 'object';
+
+      if (isPrimitiveStateWithoutReducerAndIsPreviousState) {
+        if (typeof callback === 'function') callback(this.state);
+        return;
+      }
+
+      var currentState = this.state;
+      var newState = this.reducer(this.state, data);
+      this.state = newState;
+      this.updatersPerMemoFunction.forEach(function (updaters, memoFn) {
+        var prevResult = memoFn(currentState);
+        var newResult = memoFn(newState);
+
+        if (prevResult === newResult) {
+          return;
+        }
+
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = updaters[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var updateComponent = _step.value;
+            updateComponent(_this2.state);
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator.return != null) {
+              _iterator.return();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
       });
 
       if (subscriptions[name].length) {
         subscriptions[name].forEach(function (c) {
-          return c(_this2.state, action);
+          return c(_this2.state, data);
         });
       }
 
       if (typeof callback === 'function') callback(this.state);
     },
-    setters: []
+    updatersPerMemoFunction: new Map()
   };
   store.setState = store.setState.bind(store);
+  store.updatersPerMemoFunction.set(defaultMemoFn, new Set());
+  stores = Object.assign({}, stores, _defineProperty({}, name, store));
   subscriptions[name] = [];
   store.public = new StoreInterface(name, store, reducer !== defaultReducer);
-  stores = Object.assign({}, stores, _defineProperty({}, name, store));
   return store.public;
 }
 /**
  * Returns a store instance based on its name
- * @callback {String} name - The name of the wanted store
+ * @name {String} name - The name of the wanted store
  * @returns {StoreInterface} the store instance
  */
 
@@ -282,11 +325,21 @@ function getStoreByName(name) {
 /**
  * Returns a [ state, setState ] pair for the selected store. Can only be called within React Components
  * @param {String|StoreInterface} identifier - The identifier for the wanted store
+ * @param {(state:any) => any} memoFn [state => state] - A memoization function to optimize component rerender. Receive the store state and return a subset of it. The component will only rerender when the subset changes.
  * @returns {Array} the [state, setState] pair.
  */
 
 function useStore(identifier) {
+  var memoFn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultMemoFn;
   var store = getStoreByIdentifier(identifier);
+
+  if (!store) {
+    throw 'store does not exist';
+  }
+
+  if (typeof memoFn !== 'function') {
+    throw 'memoFn must be a function';
+  }
 
   var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(store.state),
       _useState2 = _slicedToArray(_useState, 2),
@@ -294,14 +347,22 @@ function useStore(identifier) {
       set = _useState2[1];
 
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
-    if (!store.setters.includes(set)) {
-      store.setters.push(set);
+    if (!store.updatersPerMemoFunction.has(memoFn)) {
+      store.updatersPerMemoFunction.set(memoFn, new Set());
+    }
+
+    var updatersPerMemoFunction = store.updatersPerMemoFunction.get(memoFn);
+
+    if (!updatersPerMemoFunction.has(set)) {
+      updatersPerMemoFunction.add(set);
     }
 
     return function () {
-      store.setters = store.setters.filter(function (setter) {
-        return setter !== set;
-      });
+      updatersPerMemoFunction.delete(set);
+
+      if (!updatersPerMemoFunction.size) {
+        store.updatersPerMemoFunction.delete(memoFn);
+      }
     };
   }, []);
   return [state, store.setState];
