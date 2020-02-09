@@ -189,7 +189,7 @@ The store's initial state. it can be any data type. defaults to an empty object.
 #### `reducer: (state:any, data:any) -> any`
 You can specify a reducer function to take care of state changes. the reducer functions receives two arguments, the previous state and the data dispatched. the function must return a new state, if not, the new state will be `null`. Optional
 
-### <a name="api_getStoreByName">`getStoreByName(name: String) -> StoreInterface`</a>
+### <a name="api_getStoreByName">`getStoreByName(name) -> StoreInterface`</a>
 Finds a store by its name and returns its instance.
 ### Arguments
 #### `name: String`
