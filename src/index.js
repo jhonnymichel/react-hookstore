@@ -18,7 +18,7 @@ class StoreInterface {
 
   /**
    * Subscribe to store changes
-   * @param {(state:any, action:any) => void} callback - The function to be invoked everytime the store is updated
+   * @param {(state:any, data:any) => void} callback - The function to be invoked everytime the store is updated
    * @return {Function} - Call the function returned by the method to cancel the subscription
    */
   subscribe(callback) {
@@ -35,11 +35,18 @@ class StoreInterface {
     }
   }
 
-  setState() {
+  /**
+   * Set the store state
+   * @param {any} data - The new state value.
+   */
+  setState(data) {
     console.warn(`[React Hookstore] Store ${this.name} uses a reducer to handle its state updates. use dispatch instead of setState`)
   }
-
-  dispatch() {
+  /**
+   * Dispatch data to the store reducer
+   * @param {any} data - The data payload the reducer receives
+   */
+  dispatch(data) {
     console.warn(`[React Hookstore] Store ${this.name} does not use a reducer to handle state updates. use setState instead of dispatch`)
   }
 }
@@ -56,7 +63,7 @@ function getStoreByIdentifier(identifier) {
  * Creates a new store
  * @param {String} name - The store namespace.
  * @param {*} state [{}] - The store initial state. It can be of any type.
- * @param {(state:any, action:any) => any} reducer [null] - The reducer handler. Optional
+ * @param {(state:any, data:any) => any} reducer [null] - The reducer handler. Optional
  * @returns {StoreInterface} The store instance.
  */
 export function createStore(name, state = {}, reducer=defaultReducer) {
@@ -66,15 +73,16 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
   if (stores[name]) {
     throw `Store with name ${name} already exists`;
   }
+  
 
   const store = {
     state,
     reducer,
-    setState(action, callback) {
+    setState(data, callback) {
       const isPrimitiveStateWithoutReducerAndIsPreviousState =
         this.reducer === defaultReducer
-          && action === this.state
-          && typeof action !== 'object';
+          && data === this.state
+          && typeof data !== 'object';
 
       if (isPrimitiveStateWithoutReducerAndIsPreviousState) {
         if (typeof callback === 'function') callback(this.state)
@@ -82,7 +90,7 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
       }
 
       const currentState = this.state;
-      const newState = this.reducer(this.state, action);
+      const newState = this.reducer(this.state, data);
       this.state = newState;
 
       this.updatersPerMemoFunction.forEach((updaters, memoFn) => {
@@ -97,7 +105,7 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
       });
 
       if (subscriptions[name].length) {
-        subscriptions[name].forEach(c => c(this.state, action));
+        subscriptions[name].forEach(c => c(this.state, data));
       }
 
       if (typeof callback === 'function') callback(this.state)
