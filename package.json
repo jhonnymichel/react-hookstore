@@ -10,6 +10,8 @@
     "test": "jest",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
     "build": "tsc && webpack --progress --config webpack.prod.config.js",
+    "storybook": "start-storybook -p 6006 --docs",
+    "build-storybook": "build-storybook --docs",
     "start": "webpack-dev-server --hot --reload --config webpack.dev.config.js"
   },
   "repository": {
@@ -67,5 +69,10 @@
     "dist",
     "types",
     "src"
-  ]
+  ],
+  "dependencies": {
+    "@storybook/addon-docs": "^5.3.12",
+    "@storybook/addons": "^5.3.12",
+    "@storybook/react": "^5.3.12"
+  }
 }
