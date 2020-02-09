@@ -172,17 +172,17 @@ export { TodoList, AddTodo };
 Check out the [Codesandbox demo!](https://codesandbox.io/s/r58pqonkop)
 
 ## Methods API
-### <a name="api_createStore">`createStore(name:String, state?:*, reducer?:Function):StoreInterface`</a>
+### <a name="api_createStore">`createStore(name:String, state?:any, reducer?:(state:any, data:any) -> any) -> StoreInterface`</a>
 Creates a store to be used across the entire application. Returns a StoreInterface object.
 ### Arguments
 #### `name:String`
 The namespace for your store, it can be used to identify the store across the application.
-#### `state:* = {}`
+#### `state:any = {}`
 The store's initial state. it can be any data type. defaults to an empty object. Optional
-#### `reducer:Function`
-You can specify a reducer function to take care of state changes. the reducer functions receives two arguments, the previous state and the action that triggered the state update. the function must return a new state, if not, the new state will be `null`. Optional
+#### `reducer:(state:any, data:any) -> any`
+You can specify a reducer function to take care of state changes. the reducer functions receives two arguments, the previous state and the data dispatched. the function must return a new state, if not, the new state will be `null`. Optional
 
-### <a name="api_getStoreByName">`getStoreByName(name:String):StoreInterface`</a>
+### <a name="api_getStoreByName">`getStoreByName(name:String) -> StoreInterface`</a>
 Finds a store by its name and returns its instance.
 ### Arguments
 #### `name:String`
@@ -194,19 +194,19 @@ The store instance that is returned by the createStore and getStoreByName method
 ### Interface
 #### `name:String`
 The name of the store;
-#### `getState:Function():*`
+#### `getState:() -> state`
 A method that returns the store's current state
-#### `setState:Function(state:*, callback?:Function)`
+#### `setState:(state:any, callback?:(state:any) -> void)`
 Sets the state of the store. works if the store does not use a reducer state handler. Otherwise, use `dispatch`. callback is optional and will be invoked once the state is updated, receiving the updated state as argument.
-#### `dispatch:Function(action:*, callback?:Function)`
-Dispatches whatever is passed into this function to the store. works if the store uses a reducer state handler. Otherwise, use `setState`. callback is optional and will be invoked once the state is updated, receiving the updated state as argument.
-#### `subscribe:Function(callback:Function):unsubscribe:Function`
-The callback function will be invoked everytime the store state changes. If the store is reducer-based, the callback function will be called with `action` as the first argument and `state` as the second. otherwise, it'll be called with `state` as the only argument.
+#### `dispatch(data:any, callback?(state:any) -> void)`
+Dispatches data to update the state. works if the store uses a reducer state handler. Otherwise, use `setState`. callback is optional and will be invoked once the state is updated, receiving the updated state as argument.
+#### `subscribe(callback(state) | callback(state, data)) -> unsubscribe:() -> void`
+The callback function will be invoked everytime the store state changes. If the store is reducer-based, the callback function will be called with the state and the dispatched data as arguments. otherwise, it'll be called with state as the only argument.
 
 the subscribe method returns a function that can be called in order to cancel the subscription for the callback function.
 
 ## React API
-### <a name="api_useStore">`useStore(identifier:String|StoreInterface):Array[state, setState|dispatch]`</a>
+### <a name="api_useStore">`useStore(identifier:String|StoreInterface) -> [state, setState|dispatch]`</a>
 A function that returns a pair with the current state and a function to trigger state updates for the specified store.
 ### Arguments
 #### Identifier:String|StoreInterface
@@ -221,11 +221,11 @@ createStore({state: 0});
 createStore({
   name: 'store',
   state: 0,
-  reducer(state, action) {
-    return state + action;
+  reducer(state, data) {
+    return state + data;
   }
 })
 // v1.1
 createStore('myStore', 0);
-createStore('store', 0, (state, value) => state + action);
+createStore('store', 0, (state, data) => state + data);
 ```
