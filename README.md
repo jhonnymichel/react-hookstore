@@ -179,7 +179,7 @@ Steps to reproduce:
 Check out the [Codesandbox demo!](https://codesandbox.io/s/r58pqonkop)
 
 ## Methods API
-### <a name="api_createStore">`createStore(name: String, state?: any, reducer?: (state:any, data:any) -> any) -> StoreInterface`</a>
+### <a name="api_createStore">`createStore(name, state?, reducer?) -> StoreInterface`</a>
 Creates a store to be used across the entire application. Returns a StoreInterface object.
 ### Arguments
 #### `name: String`
@@ -207,16 +207,16 @@ A method that returns the store's current state
 Sets the state of the store. works if the store does not use a reducer state handler. Otherwise, use `dispatch`. callback is optional and will be invoked once the state is updated, receiving the updated state as argument.
 #### `dispatch(data: any, callback?: (state: any) -> void)`
 Dispatches data to update the state. works if the store uses a reducer state handler. Otherwise, use `setState`. callback is optional and will be invoked once the state is updated, receiving the updated state as argument.
-#### `subscribe(callback: (state) -> void | callback: (state, data) -> void) -> unsubscribe: () -> void`
+#### `subscribe(callback: (state: any, data?: any) -> void) -> unsubscribe: () -> void`
 The callback function will be invoked everytime the store state changes. If the store is reducer-based, the callback function will be called with the state and the dispatched data as arguments. otherwise, it'll be called with state as the only argument.
 
 the subscribe method returns a function that can be called in order to cancel the subscription for the callback function.
 
 ## React API
-### <a name="api_useStore">`useStore(identifier: String|StoreInterface) -> [state, setState|dispatch]`</a>
+### <a name="api_useStore">`useStore(identifier) -> [state, setState|dispatch]`</a>
 A function that returns a pair with the current state and a function to trigger state updates for the specified store.
 ### Arguments
-#### Identifier:String|StoreInterface
+#### Identifier: String|StoreInterface
 The store identifier. It can be either its string name or its StoreInterface instance returned by a createStore or getStoreByName method.
 
 # <a name="migration">Migrating from v1.0 to v1.1</a>
