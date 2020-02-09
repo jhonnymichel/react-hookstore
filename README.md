@@ -1,8 +1,7 @@
 # React Hook Store
 [![npm version](https://badge.fury.io/js/react-hookstore.svg)](https://badge.fury.io/js/react-hookstore) [![Build Status](https://travis-ci.org/jhonnymichel/react-hookstore.svg?branch=master)](https://travis-ci.org/jhonnymichel/react-hookstore) [![Coverage Status](https://coveralls.io/repos/github/jhonnymichel/react-hookstore/badge.svg?branch=master)](https://coveralls.io/github/jhonnymichel/react-hookstore?branch=master)
 
-A very simple and small (1k gzipped!) state management lib for React that uses the bleeding edge React's `useState` hook.
-Which basically means no magic behind the curtains, only pure react APIs being used to share state across components.
+A very simple and small (less than 2k gzipped!) state management lib for React using hooks.
 
 Try it on [Codesandbox!](https://codesandbox.io/s/r58pqonkop)
 
@@ -11,7 +10,7 @@ Try it on [Codesandbox!](https://codesandbox.io/s/r58pqonkop)
 - Usage
   - [Basic](#usage_basic)
   - [Referencing stores](#usage_namespace)
-  - [Reducer powered stores](#usage_reducer)
+  - [Using reducers to update state](#usage_reducer)
   - [More examples](https://codesandbox.io/s/r58pqonkop)
 - API
   - [createStore](#api_createStore)
@@ -30,9 +29,7 @@ You can install the lib through NPM or grab the files in the `dist` folder of th
 ## <a name="usage">Usage</a>
 ### <a name="usage_basic">Basic</a>
 
-This is the most basic implementation of the library. create a store with its initial state.
-Later, call `useStore` inside components to retrieve its state and setState method.
-The value passed as the first argument to the setState method will be the new state. no reducer required (but you can use a reducer, see the advanced example down below).
+This is the most basic implementation of the library.
 
 ```javascript
 import React from 'react';
@@ -64,9 +61,13 @@ function AnotherComponent() {
   )
 }
 ```
+Steps to reproduce:
+
+- Create a store with its initial state.
+- Later, call `useStore` inside components to retrieve its state and setState method, that we called timesClicked and setClicks.
+- The value passed as the first argument to the setClicks method will be the new state.
 
 ### <a name="usage_namespace">Referencing stores</a>
-It is possible to create multiple stores in an app.
 Stores can be referenced by using their instance that is returned by the createStore method, as well as using their name.
 
 ```javascript
@@ -95,9 +96,9 @@ function StatefullHello() {
   );
 }
 ```
-Both methods can be used and mixed according to the needs, but we recomend using the instance identifiers.
+Both methods can be used and mixed according to the needs, but it is recomended to use the instance identifiers.
 
-### <a name="usage_reducer">Reducer powered stores</a>
+### <a name="usage_reducer">Using reducers to update state</a>
 We can delegate the state management to reducers (just like redux!) if we want.
 ```javascript
 import React from 'react';
@@ -168,6 +169,14 @@ function TodoList() {
 
 export { TodoList, AddTodo };
 ```
+
+Steps to reproduce:
+
+- Create a store with an aditional third parameter: a reducer function.
+- Later, call `useStore` inside components to retrieve its state and dispatch method.
+- call dispatch and provide data as the first argument. Although data can be anything, we are using the pattern of { type, payload }, made popular by redux.
+
+
 ### More examples
 Check out the [Codesandbox demo!](https://codesandbox.io/s/r58pqonkop)
 
