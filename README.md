@@ -29,7 +29,7 @@ You can install the lib through NPM or grab the files in the `dist` folder of th
 ## <a name="usage">Usage</a>
 ### <a name="usage_basic">Basic</a>
 
-This is the most basic implementation of the library.
+This is the most basic implementation of the library:
 
 ```javascript
 import React from 'react';
@@ -38,7 +38,6 @@ import { createStore, useStore } from 'react-hookstore';
 createStore('clickStore', 0);
 
 function StatefullHello() {
-  // just use the useStore method to grab the state and the setState methods
   const [ timesClicked, setClicks ] = useStore('clickStore');
 
   return (
@@ -51,7 +50,6 @@ function StatefullHello() {
 }
 
 function AnotherComponent() {
-  // you can name the state whatever you want
   const [ timesClicked ] = useStore('clickStore');
   return (
     <div>
@@ -99,7 +97,7 @@ function StatefullHello() {
 Both methods can be used and mixed according to the needs, but it is recomended to use the instance identifiers.
 
 ### <a name="usage_reducer">Using reducers to update state</a>
-We can delegate the state management to reducers (just like redux!) if we want.
+We can delegate the state management to reducers (just like redux!) if we want:
 ```javascript
 import React from 'react';
 import { createStore, useStore } from 'react-hookstore';
@@ -174,14 +172,15 @@ Steps to reproduce:
 
 - Create a store with an aditional third parameter: a reducer function.
 - Later, call `useStore` inside components to retrieve its state and dispatch method.
-- call dispatch and provide data as the first argument. Although data can be anything, we are using the pattern of { type, payload }, made popular by redux.
+- call dispatch and provide data as the first argument. Although data can be anything, we are using the pattern of `{ type, payload }`, made popular by redux.
 
 
 ### More examples
 Check out the [Codesandbox demo!](https://codesandbox.io/s/r58pqonkop)
 
 ## Methods API
-### <a name="api_createStore">`createStore(name:String, state?:any, reducer?:(state:any, data:any) -> any) -> StoreInterface`</a>
+### <a name="api_createStore">`createStore`</a>
+`createStore(name:String, state?:any, reducer?:(state:any, data:any) -> any) -> StoreInterface`
 Creates a store to be used across the entire application. Returns a StoreInterface object.
 ### Arguments
 #### `name:String`
