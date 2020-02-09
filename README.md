@@ -203,7 +203,7 @@ The store instance that is returned by the createStore and getStoreByName method
 The name of the store;
 #### `getState: () -> state`
 A method that returns the store's current state
-#### `setState: (state: any, callback?: (state:any) -> void)`
+#### `setState: (state: any, callback?: (state: any) -> void)`
 Sets the state of the store. works if the store does not use a reducer state handler. Otherwise, use `dispatch`. callback is optional and will be invoked once the state is updated, receiving the updated state as argument.
 #### `dispatch(data: any, callback?: (state: any) -> void)`
 Dispatches data to update the state. works if the store uses a reducer state handler. Otherwise, use `setState`. callback is optional and will be invoked once the state is updated, receiving the updated state as argument.
