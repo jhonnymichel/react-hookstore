@@ -8,7 +8,7 @@ const defaultStyles = {
 const mapStateToProps = (state) => state.number;
 
 // Creating a nameless store, do that if you do not wish to have multiple stores in your app
-createStore('clickCounter', { number: 0 }, (state, number) => {
+const store = createStore('clickCounter', { number: 0 }, (state, number) => {
   return { number }
 });
 

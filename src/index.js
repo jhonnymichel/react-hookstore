@@ -18,14 +18,9 @@ class StoreInterface {
 
   /**
    * Subscribe to store changes
-   * @callback callback - The function to be invoked everytime the store is updated
+   * @param {(state:any, action:any) => void} callback - The function to be invoked everytime the store is updated
    * @return {Function} - Call the function returned by the method to cancel the subscription
    */
-
-  /**
-  *
-  * @param {callback} state, action
-  */
   subscribe(callback) {
     if (!callback || typeof callback !== 'function') {
       throw `store.subscribe callback argument must be a function. got '${typeof callback}' instead.`;
@@ -61,14 +56,9 @@ function getStoreByIdentifier(identifier) {
  * Creates a new store
  * @param {String} name - The store namespace.
  * @param {*} state [{}] - The store initial state. It can be of any type.
- * @callback reducer [null]
+ * @param {(state:any, action:any) => any} reducer [null] - The reducer handler. Optional
  * @returns {StoreInterface} The store instance.
  */
-
- /**
-  *
-  * @param {reducer} prevState, action - The reducer handler. Optional.
-  */
 export function createStore(name, state = {}, reducer=defaultReducer) {
   if (typeof name !== 'string') {
     throw 'Store name must be a string';
@@ -126,10 +116,9 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
 
 /**
  * Returns a store instance based on its name
- * @callback {String} name - The name of the wanted store
+ * @name {String} name - The name of the wanted store
  * @returns {StoreInterface} the store instance
  */
-
 export function getStoreByName(name) {
   try {
     return stores[name].public;
@@ -141,14 +130,9 @@ export function getStoreByName(name) {
 /**
  * Returns a [ state, setState ] pair for the selected store. Can only be called within React Components
  * @param {String|StoreInterface} identifier - The identifier for the wanted store
- * @callback memoFn [state => state] - A memoization function to optimize component rerender. Receive the store state and return a subset of it. The component will only rerender when the subset changes.
+ * @param {(state:any) => any} memoFn [state => state] - A memoization function to optimize component rerender. Receive the store state and return a subset of it. The component will only rerender when the subset changes.
  * @returns {Array} the [state, setState] pair.
  */
-
-/**
-  *
-  * @param {memoFn} state
-  */
 export function useStore(identifier, memoFn=defaultMemoFn) {
   const store = getStoreByIdentifier(identifier);
   if (!store) {
