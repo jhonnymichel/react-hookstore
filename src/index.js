@@ -126,6 +126,8 @@ export function useStore(identifier) {
       store.setters.push(set);
     }
 
+    set(store.state);
+
     return () => {
       store.setters = store.setters.filter(setter => setter !== set)
     }
