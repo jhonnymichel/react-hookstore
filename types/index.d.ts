@@ -1,22 +1,22 @@
 declare module 'react-hookstore' {
   type StateCallback<TState> = (state: TState) => void;
 
-  type ReducerType<TState, TPayload = any> = (state: TState, payload: TPayload) => TState;
+  type ReducerType<TState, TData = any> = (state: TState, data: TData) => TState;
 
   type SetStateType<TState> = (state: TState, callback?: StateCallback<TState>) => void;
 
-  type DispatchType<TState, TPayload = any> = (payload: TPayload, callback?: StateCallback<TState>) => void;
+  type DispatchType<TState, TData = any> = (data: TData, callback?: StateCallback<TState>) => void;
 
   type StoreStateHookType<TState> = [TState, SetStateType<TState>];
 
-  type StoreDispatchHookType<TState, TPayload = any> = [TState, DispatchType<TState, TPayload>];
+  type StoreDispatchHookType<TState, TData = any> = [TState, DispatchType<TState, TData>];
 
   const defaultReducer: ReducerType<any>;
 
-  export interface StoreSpec<TState, TPayload = any> {
+  export interface StoreSpec<TState, TData = any> {
       state: TState;
-      reducer: ReducerType<TState, TPayload>;
-      setState: SetStateType<TState> | DispatchType<TState, TPayload>;
+      reducer: ReducerType<TState, TData>;
+      setState: SetStateType<TState> | DispatchType<TState, TData>;
       setters: StateCallback<TState>[]
   }
 
@@ -26,27 +26,27 @@ declare module 'react-hookstore' {
       setState(state: TState, callback?: StateCallback<TState>): void;
   }
 
-  export interface ReducerStoreInterface<TState, TPayload = any> {
+  export interface ReducerStoreInterface<TState, TData = any> {
       readonly name: string;
       getState(): TState;
-      dispatch<TPayload>(payload: TPayload, callback?: StateCallback<TState>): void;
+      dispatch<TData>(data: TData, callback?: StateCallback<TState>): void;
   }
 
-  export function createStore<TState, TPayload = any>(name: string, state: TState, reducer: ReducerType<TState, TPayload>): ReducerStoreInterface<TState, TPayload>;
+  export function createStore<TState, TData = any>(name: string, state: TState, reducer: ReducerType<TState, TData>): ReducerStoreInterface<TState, TData>;
 
   export function createStore<TState>(name: string, state: TState): StateStoreInterface<TState>;
 
   export function createStore<TState>(name: string, state: TState, reducer: ReducerType<TState>): ReducerStoreInterface<TState>;
 
-  export function getStoreByName<TState, TPayload = any>(name: string): StateStoreInterface<TState> | ReducerStoreInterface<TState>;
+  export function getStoreByName<TState, TData = any>(name: string): StateStoreInterface<TState> | ReducerStoreInterface<TState>;
 
   export function getStoreByName<TState>(name: string): StateStoreInterface<TState> | ReducerStoreInterface<TState>;
 
   export function useStore<TState>(identifier: string): StoreStateHookType<TState> | StoreDispatchHookType<TState>;
 
-  export function useStore<TState, TPayload = any>(identifier: string): StoreDispatchHookType<TState, TPayload>;
+  export function useStore<TState, TData = any>(identifier: string): StoreDispatchHookType<TState, TData>;
 
   export function useStore<TState>(store: StateStoreInterface<TState>): StoreStateHookType<TState>;
 
-  export function useStore<TState, TPayload = any>(store: ReducerStoreInterface<TState, TPayload>): StoreDispatchHookType<TState, TPayload>;
+  export function useStore<TState, TData = any>(store: ReducerStoreInterface<TState, TData>): StoreDispatchHookType<TState, TData>;
 }
