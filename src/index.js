@@ -69,12 +69,13 @@ function getStoreByIdentifier(identifier) {
   *
   * @param {reducer} prevState, action - The reducer handler. Optional.
   */
-export function createStore(name, state = {}, reducer=defaultReducer, overrideIfExists = false) {
+export function createStore(name, state = {}, reducer=defaultReducer) {
   if (typeof name !== 'string') {
     throw new TypeError('[React Hookstore] Store name must be a string');
   }
-  if (stores[name] && !overrideIfExists) {
-    throw new TypeError(`[React Hookstore] Store with name ${name} already exists`);
+  
+  if (stores[name]) {
+    console.warn(`[React Hookstore] Store with name ${name} already exists. Overriding`);
   }
 
   const store = {
