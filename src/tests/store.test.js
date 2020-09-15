@@ -13,12 +13,12 @@ describe('createStore', () => {
     expect(Object.keys(store2)).toEqual(['name', 'dispatch', 'getState', 'subscribe']);
   });
 
-  it('Should not allow stores with the same name to be created', () => {
+  it('Should warn about overriding an existing store', () => {
+    const consoleWarn = jest.spyOn(global.console, 'warn');
     const store = createStore('unique', 0);
     expect(store).toBeTruthy();
-    expect(() => {
-      createStore('unique');
-    }).toThrow();
+    createStore('unique');
+    expect(consoleWarn).toHaveBeenCalled();
   });
 
   it('Should not allow store names to not be a string', () => {
@@ -126,4 +126,5 @@ describe('store', () => {
       expect(newState).toBe('bar');
     });
   });
+
 });
