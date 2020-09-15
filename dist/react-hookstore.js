@@ -172,13 +172,13 @@ function () {
       var _this = this;
 
       if (!callback || typeof callback !== 'function') {
-        throw "store.subscribe callback argument must be a function. got '".concat(_typeof(callback), "' instead.");
+        throw new TypeError("[React Hookstore] store.subscribe callback argument must be a function. got '".concat(_typeof(callback), "' instead."));
       }
 
       if (subscriptions[this.name].find(function (c) {
         return c === callback;
       })) {
-        console.warn('This callback is already subscribed to this store. skipping subscription');
+        console.warn('[React Hookstore] This callback is already subscribed to this store. skipping subscription');
         return;
       }
 
@@ -208,7 +208,7 @@ function getStoreByIdentifier(identifier) {
   var name = identifier instanceof StoreInterface ? identifier.name : identifier;
 
   if (!stores[name]) {
-    throw "Store with name ".concat(name, " does not exist");
+    throw new Error("[React Hookstore] Store with name ".concat(name, " does not exist"));
   }
 
   return stores[name];
@@ -232,11 +232,11 @@ function createStore(name) {
   var reducer = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : defaultReducer;
 
   if (typeof name !== 'string') {
-    throw 'Store name must be a string';
+    throw new TypeError('[React Hookstore] Store name must be a string');
   }
 
   if (stores[name]) {
-    throw "Store with name ".concat(name, " already exists");
+    throw new TypeError("[React Hookstore] Store with name ".concat(name, " already exists"));
   }
 
   var store = {
@@ -246,8 +246,12 @@ function createStore(name) {
       var _this2 = this;
 
       this.state = this.reducer(this.state, action);
-      this.setters.forEach(function (setter) {
-        return setter(_this2.state);
+      this.setters.forEach(function (set) {
+        try {
+          set(_this2.state);
+        } catch (e) {
+          debugger;
+        }
       });
 
       if (subscriptions[name].length) {
@@ -276,7 +280,8 @@ function getStoreByName(name) {
   try {
     return stores[name].public;
   } catch (e) {
-    throw "Store with name ".concat(name, " does not exist");
+    console.warn("[React Hookstore] Store with name ".concat(name, " does not exist"));
+    return null;
   }
 }
 /**
@@ -293,11 +298,11 @@ function useStore(identifier) {
       state = _useState2[0],
       set = _useState2[1];
 
-  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
-    if (!store.setters.includes(set)) {
-      store.setters.push(set);
-    }
+  if (!store.setters.includes(set)) {
+    store.setters.push(set);
+  }
 
+  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
     return function () {
       store.setters = store.setters.filter(function (setter) {
         return setter !== set;

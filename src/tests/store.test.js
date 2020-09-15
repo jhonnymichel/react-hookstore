@@ -37,10 +37,10 @@ describe('getStoreByName', () => {
     expect(store.name).toBe('test');
   })
 
-  it('Should throw an error if store does not exist', () => {
-    expect(() => {
-      getStoreByName('Unexistent store');
-    }).toThrow();
+  it('Should return null if store does not exist', () => {
+    expect(
+      getStoreByName('Unexistent store')
+    ).toEqual(null);
   });
 });
 
@@ -126,5 +126,4 @@ describe('store', () => {
       expect(newState).toBe('bar');
     });
   });
-
 });

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 let stores = {};
 let subscriptions = {};
@@ -27,10 +27,10 @@ class StoreInterface {
   */
   subscribe(callback) {
     if (!callback || typeof callback !== 'function') {
-      throw `store.subscribe callback argument must be a function. got '${typeof callback}' instead.`;
+      throw new TypeError(`[React Hookstore] store.subscribe callback argument must be a function. got '${typeof callback}' instead.`);
     }
     if (subscriptions[this.name].find(c => c === callback)) {
-      console.warn('This callback is already subscribed to this store. skipping subscription');
+      console.warn('[React Hookstore] This callback is already subscribed to this store. skipping subscription');
       return;
     }
     subscriptions[this.name].push(callback);
@@ -51,7 +51,7 @@ class StoreInterface {
 function getStoreByIdentifier(identifier) {
   const name = identifier instanceof StoreInterface ? identifier.name : identifier;
   if (!stores[name]) {
-    throw `Store with name ${name} does not exist`;
+    throw new Error(`[React Hookstore] Store with name ${name} does not exist`);
   }
   return stores[name];
 }
@@ -70,10 +70,10 @@ function getStoreByIdentifier(identifier) {
   */
 export function createStore(name, state = {}, reducer=defaultReducer) {
   if (typeof name !== 'string') {
-    throw 'Store name must be a string';
+    throw new TypeError('[React Hookstore] Store name must be a string');
   }
   if (stores[name]) {
-    throw `Store with name ${name} already exists`;
+    throw new TypeError(`[React Hookstore] Store with name ${name} already exists`);
   }
 
   const store = {
@@ -81,7 +81,13 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
     reducer,
     setState(action, callback) {
       this.state = this.reducer(this.state, action);
-      this.setters.forEach(setter => setter(this.state));
+      this.setters.forEach(set => {
+        try {
+          set(this.state)
+        } catch(e) {
+          debugger;
+        }
+      });
       if (subscriptions[name].length) {
         subscriptions[name].forEach(c => c(this.state, action));
       }
@@ -107,7 +113,8 @@ export function getStoreByName(name) {
   try {
     return stores[name].public;
   } catch(e) {
-    throw `Store with name ${name} does not exist`;
+    console.warn(`[React Hookstore] Store with name ${name} does not exist`);
+    return null;
   }
 }
 
@@ -121,13 +128,11 @@ export function useStore(identifier) {
 
   const [ state, set ] = useState(store.state);
 
+  if (!store.setters.includes(set)) {
+    store.setters.push(set);
+  }
+
   useEffect(() => {
-    if (!store.setters.includes(set)) {
-      store.setters.push(set);
-    }
-
-    set(store.state);
-
     return () => {
       store.setters = store.setters.filter(setter => setter !== set)
     }
