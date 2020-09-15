@@ -32,11 +32,11 @@ declare module 'react-hookstore' {
       dispatch<TPayload>(payload: TPayload, callback?: StateCallback<TState>): void;
   }
 
-  export function createStore<TState, TPayload = any>(name: string, state: TState, reducer: ReducerType<TState, TPayload>): ReducerStoreInterface<TState, TPayload>;
+  export function createStore<TState, TPayload = any>(name: string, state: TState, reducer: ReducerType<TState, TPayload>, overrideIfExists: boolean): ReducerStoreInterface<TState, TPayload>;
 
-  export function createStore<TState>(name: string, state: TState): StateStoreInterface<TState>;
+  export function createStore<TState>(name: string, state: TState, reducer: void, overrideIfExists: boolean): StateStoreInterface<TState>;
 
-  export function createStore<TState>(name: string, state: TState, reducer: ReducerType<TState>): ReducerStoreInterface<TState>;
+  export function createStore<TState>(name: string, state: TState, reducer: ReducerType<TState>, overrideIfExists: boolean): ReducerStoreInterface<TState>;
 
   export function getStoreByName<TState, TPayload = any>(name: string): StateStoreInterface<TState> | ReducerStoreInterface<TState>;
 

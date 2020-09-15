@@ -61,6 +61,7 @@ function getStoreByIdentifier(identifier) {
  * @param {String} name - The store namespace.
  * @param {*} state [{}] - The store initial state. It can be of any type.
  * @callback reducer [null]
+ * @param {Boolean} overrideIfExists - It'll override an existent store with the same name. useful for SSR.
  * @returns {StoreInterface} The store instance.
  */
 
@@ -68,11 +69,11 @@ function getStoreByIdentifier(identifier) {
   *
   * @param {reducer} prevState, action - The reducer handler. Optional.
   */
-export function createStore(name, state = {}, reducer=defaultReducer) {
+export function createStore(name, state = {}, reducer=defaultReducer, overrideIfExists = false) {
   if (typeof name !== 'string') {
     throw new TypeError('[React Hookstore] Store name must be a string');
   }
-  if (stores[name]) {
+  if (stores[name] && !overrideIfExists) {
     throw new TypeError(`[React Hookstore] Store with name ${name} already exists`);
   }
 
