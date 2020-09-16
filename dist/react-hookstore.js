@@ -251,7 +251,8 @@ function createStore(name) {
         try {
           set(_this2.state);
         } catch (e) {
-          debugger;
+          console.error(e);
+          console.error('[React Hookstore] The error above was caused while React Hookstore was trying to call setState on a component. If you think this is a bug with React Hookstore, please file an issue https://github.com/jhonnymichel/react-hookstore/issues/new');
         }
       });
 
