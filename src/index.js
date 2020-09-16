@@ -73,7 +73,7 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
   if (typeof name !== 'string') {
     throw new TypeError('[React Hookstore] Store name must be a string');
   }
-  
+
   if (stores[name]) {
     console.warn(`[React Hookstore] Store with name ${name} already exists. Overriding`);
   }
@@ -87,7 +87,8 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
         try {
           set(this.state)
         } catch(e) {
-          debugger;
+          console.error(e)
+          console.error('[React Hookstore] The error above was caused while React Hookstore was trying to call setState on a component. If you think this is a bug with React Hookstore, please file an issue https://github.com/jhonnymichel/react-hookstore/issues/new')
         }
       });
       if (subscriptions[name].length) {
