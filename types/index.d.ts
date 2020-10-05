@@ -1,4 +1,6 @@
 declare module 'react-hookstore' {
+  type NonUndefined<T> = T extends undefined ? never : T;
+
   type StateCallback<TState> = (state: TState) => void;
 
   type ReducerType<TState, TPayload = any> = (state: TState, payload: TPayload) => TState;
@@ -32,11 +34,11 @@ declare module 'react-hookstore' {
       dispatch<TPayload>(payload: TPayload, callback?: StateCallback<TState>): void;
   }
 
-  export function createStore<TState, TPayload = any>(name: string, state: TState, reducer: ReducerType<TState, TPayload>): ReducerStoreInterface<TState, TPayload>;
+  export function createStore<TState, TPayload = any>(name: string, state: NonUndefined<TState>, reducer: ReducerType<TState, TPayload>): ReducerStoreInterface<TState, TPayload>;
 
-  export function createStore<TState>(name: string, state: TState): StateStoreInterface<TState>;
+  export function createStore<TState>(name: string, state: NonUndefined<TState>): StateStoreInterface<TState>;
 
-  export function createStore<TState>(name: string, state: TState, reducer: ReducerType<TState>): ReducerStoreInterface<TState>;
+  export function createStore<TState>(name: string, state: NonUndefined<TState>, reducer: ReducerType<TState>): ReducerStoreInterface<TState>;
 
   export function getStoreByName<TState, TPayload = any>(name: string): StateStoreInterface<TState> | ReducerStoreInterface<TState>;
 
