@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 let stores = {};
 let subscriptions = {};
@@ -27,10 +27,10 @@ class StoreInterface {
   */
   subscribe(callback) {
     if (!callback || typeof callback !== 'function') {
-      throw `store.subscribe callback argument must be a function. got '${typeof callback}' instead.`;
+      throw new TypeError(`[React Hookstore] store.subscribe callback argument must be a function. got '${typeof callback}' instead.`);
     }
     if (subscriptions[this.name].find(c => c === callback)) {
-      console.warn('This callback is already subscribed to this store. skipping subscription');
+      console.warn('[React Hookstore] This callback is already subscribed to this store. skipping subscription');
       return;
     }
     subscriptions[this.name].push(callback);
@@ -50,6 +50,9 @@ class StoreInterface {
 
 function getStoreByIdentifier(identifier) {
   const name = identifier instanceof StoreInterface ? identifier.name : identifier;
+  if (!stores[name]) {
+    throw new Error(`[React Hookstore] Store with name ${name} does not exist`);
+  }
   return stores[name];
 }
 
@@ -58,6 +61,7 @@ function getStoreByIdentifier(identifier) {
  * @param {String} name - The store namespace.
  * @param {*} state [{}] - The store initial state. It can be of any type.
  * @callback reducer [null]
+ * @param {Boolean} overrideIfExists - It'll override an existent store with the same name. useful for SSR.
  * @returns {StoreInterface} The store instance.
  */
 
@@ -67,10 +71,11 @@ function getStoreByIdentifier(identifier) {
   */
 export function createStore(name, state = {}, reducer=defaultReducer) {
   if (typeof name !== 'string') {
-    throw 'store name must be a string';
+    throw new TypeError('[React Hookstore] Store name must be a string');
   }
+
   if (stores[name]) {
-    throw 'store already exists'
+    console.warn(`[React Hookstore] Store with name ${name} already exists. Overriding`);
   }
 
   const store = {
@@ -78,7 +83,14 @@ export function createStore(name, state = {}, reducer=defaultReducer) {
     reducer,
     setState(action, callback) {
       this.state = this.reducer(this.state, action);
-      this.setters.forEach(setter => setter(this.state));
+      this.setters.forEach(set => {
+        try {
+          set(this.state)
+        } catch(e) {
+          console.error(e)
+          console.error('[React Hookstore] The error above was caused while React Hookstore was trying to call setState on a component. If you think this is a bug with React Hookstore, please file an issue https://github.com/jhonnymichel/react-hookstore/issues/new')
+        }
+      });
       if (subscriptions[name].length) {
         subscriptions[name].forEach(c => c(this.state, action));
       }
@@ -104,7 +116,8 @@ export function getStoreByName(name) {
   try {
     return stores[name].public;
   } catch(e) {
-    throw 'store does not exist';
+    console.warn(`[React Hookstore] Store with name ${name} does not exist`);
+    return null;
   }
 }
 
@@ -115,17 +128,14 @@ export function getStoreByName(name) {
  */
 export function useStore(identifier) {
   const store = getStoreByIdentifier(identifier);
-  if (!store) {
-    throw 'store does not exist';
-  }
 
   const [ state, set ] = useState(store.state);
 
-  useEffect(() => {
-    if (!store.setters.includes(set)) {
-      store.setters.push(set);
-    }
+  if (!store.setters.includes(set)) {
+    store.setters.push(set);
+  }
 
+  useEffect(() => {
     return () => {
       store.setters = store.setters.filter(setter => setter !== set)
     }
