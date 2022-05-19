@@ -1,3 +1,14 @@
+# This library is not maintained anymore. Don't use it.
+
+This started as a curiosity project to explore React hooks. It gained some attention but there are better and production ready solutions that are just as simple as react-hookstore. Give them a try (I myself am using them):
+
+### Jotai
+A primitive state management library. It's very similar to React Hookstore with much better internals and apis.
+[Github](https://github.com/pmndrs/jotai) | [Website](jotai.org)
+### Zustand
+A redux-like state management library. It's still simple enough to resemble React Hookstore.
+[Github](https://github.com/pmndrs/zustand) | [Website](https://zustand-demo.pmnd.rs/)
+
 # React Hook Store
 [![npm version](https://badge.fury.io/js/react-hookstore.svg)](https://badge.fury.io/js/react-hookstore) [![Build Status](https://travis-ci.org/jhonnymichel/react-hookstore.svg?branch=master)](https://travis-ci.org/jhonnymichel/react-hookstore) [![Coverage Status](https://coveralls.io/repos/github/jhonnymichel/react-hookstore/badge.svg?branch=master)](https://coveralls.io/github/jhonnymichel/react-hookstore?branch=master)
 
